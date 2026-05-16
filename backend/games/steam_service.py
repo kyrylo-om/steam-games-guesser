@@ -2,36 +2,13 @@ import requests
 import logging
 from datetime import datetime
 import random
+import time
 
 logger = logging.getLogger(__name__)
 
 STEAM_STORE_API_URL = "https://store.steampowered.com/api/"
 STEAM_OFFICIAL_API_URL = "https://api.steampowered.com/"
-
-CHALLENGE_GAME_POOL = [
-    730,     # Counter-Strike 2
-    570,     # Dota 2
-    440,     # Team Fortress 2
-    220,     # Half-Life 2
-    240,     # Counter-Strike: Source
-    271590,  # GTA V
-    578080,  # PUBG
-    1172470, # Apex Legends
-    1089130, # Valheim
-    359550,  # Rainbow Six Siege
-    1622730, # Elden Ring
-    292030,  # The Witcher 3
-    242050,  # Skyrim
-    394360,  # Total War: Warhammer
-    203160,  # Torchlight II
-    236390,  # Street Fighter V
-    105600,  # Terraria
-    252490,  # Rust
-    381210,  # Dead by Daylight
-    1091500, # Cyberpunk 2077
-    945360,  # Among Us
-    72850,   # Civilization V
-]
+STEAMSPY_API_URL = "https://steamspy.com/api.php"
 
 
 def fetch_player_count(app_id):
@@ -106,6 +83,44 @@ def fetch_game_from_steam(app_id):
         return None, None
 
 
+def fetch_steamspy_top_game_ids():
+    """
+    Fetch the top 2000 SteamSpy game app ids from page 0 and 1.
+    The function waits at least one minute between requests to avoid rate limiting.
+    """
+    app_ids = []
+    seen_app_ids = set()
+
+    for page in (0, 1):
+        try:
+            response = requests.get(
+                STEAMSPY_API_URL,
+                params={"request": "all", "page": page},
+                timeout=30,
+            )
+            response.raise_for_status()
+            payload = response.json()
+
+            for app_id in payload.keys():
+                try:
+                    parsed_app_id = int(app_id)
+                except (TypeError, ValueError):
+                    continue
+
+                if parsed_app_id not in seen_app_ids:
+                    seen_app_ids.add(parsed_app_id)
+                    app_ids.append(parsed_app_id)
+        except (requests.RequestException, ValueError) as e:
+            logger.error(f"Error fetching SteamSpy top games page {page}: {e}")
+            if not app_ids:
+                return []
+
+        if page == 0:
+            time.sleep(60)
+
+    return app_ids
+
+
 def fetch_review_summary(app_id):
     """
     Fetch user review summary from Steam appreviews endpoint.
@@ -115,7 +130,7 @@ def fetch_review_summary(app_id):
         url = f"https://store.steampowered.com/appreviews/{app_id}"
         params = {
             "json": 1,
-            "language": "english",
+            "language": "all",
             "purchase_type": "all",
             "num_per_page": 0,
         }
@@ -160,85 +175,56 @@ def fetch_comparison_data(app_id):
 
         game_info = data[str(app_id)].get("data", {})
 
-        review_count, review_sentiment = fetch_review_summary(app_id)
-
-        # Extract price
-        price_overview = game_info.get("price_overview")
-        if price_overview:
-            price = price_overview.get("final_formatted", "N/A")
-        elif game_info.get("is_free"):
-            price = "Free"
-        else:
-            price = "N/A"
-
-        # Extract release date
-        release_date = game_info.get("release_date", {}).get("date", "N/A")
-
-        # Fetch current players from Official API
-        current_online = fetch_player_count(app_id)
-
-        comparison_data = {
-            "app_id": app_id,
-            "name": game_info.get("name"),
-            "header_image": game_info.get("header_image"),
-            "review_count": review_count,
-            "review_sentiment": review_sentiment,
-            "release_date": release_date,
-            "price": price,
-            "current_online": current_online,
-        }
-
-        return comparison_data
+        return build_comparison_data(app_id, game_info)
 
     except requests.RequestException as e:
         logger.error(f"Error fetching comparison data for app {app_id}: {e}")
         return None
 
 
-def get_daily_game_pairs():
+def build_comparison_data(app_id, game_info):
     """
-    Generate 10 unique game pairs for daily challenge.
+    Build the comparison payload from already fetched Steam Store data.
+    """
+    review_count, review_sentiment = fetch_review_summary(app_id)
+
+    price_overview = game_info.get("price_overview")
+    if price_overview:
+        price = price_overview.get("final_formatted", "N/A")
+    elif game_info.get("is_free"):
+        price = "Free"
+    else:
+        price = "N/A"
+
+    release_date = game_info.get("release_date", {}).get("date", "N/A")
+    current_online = fetch_player_count(app_id)
+
+    return {
+        "app_id": app_id,
+        "name": game_info.get("name"),
+        "header_image": game_info.get("header_image"),
+        "review_count": review_count,
+        "review_sentiment": review_sentiment,
+        "release_date": release_date,
+        "price": price,
+        "current_online": current_online,
+    }
+
+
+def get_daily_game_pairs(game_pool, round_count=5):
+    """
+    Generate unique game pairs for daily challenge.
     Uses date-based seeding so same pairs appear all day.
     """
     seed = datetime.utcnow().strftime("%Y-%m-%d")
     rng = random.Random(seed)
-    pool = CHALLENGE_GAME_POOL.copy()
+    pool = list(dict.fromkeys(game_pool))
     rng.shuffle(pool)
 
     pairs = []
-    while len(pairs) < 10 and len(pool) >= 2:
+    while len(pairs) < round_count and len(pool) >= 2:
         app_id1 = pool.pop()
         app_id2 = pool.pop()
         pairs.append((app_id1, app_id2))
 
     return pairs
-
-
-def build_daily_challenge_payload():
-    """
-    Build daily challenge payload containing 10 game pairs with stats.
-    """
-    pairs = get_daily_game_pairs()
-    results = []
-
-    for index, (app_id1, app_id2) in enumerate(pairs, start=1):
-        game1 = fetch_comparison_data(app_id1)
-        game2 = fetch_comparison_data(app_id2)
-        if not game1 or not game2:
-            logger.warning(
-                f"Skipping daily challenge pair {app_id1} vs {app_id2} due to missing data"
-            )
-            continue
-
-        results.append(
-            {
-                "id": index,
-                "game1": game1,
-                "game2": game2,
-            }
-        )
-
-    return {
-        "date": datetime.utcnow().strftime("%Y-%m-%d"),
-        "pairs": results,
-    }

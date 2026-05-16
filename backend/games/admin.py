@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import CachedGame, DailyChallenge, SteamSpyTopGameList
 
-# Register your models here.
+admin.site.register(CachedGame)
+admin.site.register(DailyChallenge)
+admin.site.register(SteamSpyTopGameList)
