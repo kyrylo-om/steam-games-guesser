@@ -1,10 +1,24 @@
 import requests
 import logging
+import os
+import json
+from pathlib import Path
 from datetime import datetime
 import random
 import time
 
 logger = logging.getLogger(__name__)
+
+# Debug export directory and flag
+_DEBUG_ENABLED = os.getenv("GAME_FETCH_DEBUG") == "1"
+_DEBUG_DIR = Path(
+    os.getenv("GAME_FETCH_DEBUG_DIR", Path(__file__).resolve().parent / "debug_fetch")
+)
+if _DEBUG_ENABLED:
+    try:
+        _DEBUG_DIR.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        logger.exception("Failed to create debug directory %s", _DEBUG_DIR)
 
 STEAM_STORE_API_URL = "https://store.steampowered.com/api/"
 STEAM_OFFICIAL_API_URL = "https://api.steampowered.com/"
@@ -23,6 +37,15 @@ def fetch_player_count(app_id):
         response.raise_for_status()
 
         data = response.json()
+        if _DEBUG_ENABLED:
+            try:
+                with open(
+                    _DEBUG_DIR / f"{app_id}_playercount.json", "w", encoding="utf-8"
+                ) as f:
+                    json.dump(data, f, ensure_ascii=False, indent=2)
+            except Exception:
+                logger.exception("Failed to write playercount debug for %s", app_id)
+
         return data.get("response", {}).get("player_count", 0)
 
     except requests.RequestException as e:
@@ -58,6 +81,15 @@ def fetch_game_from_steam(app_id):
             return None, None
 
         game_info = app_data.get("data", {})
+
+        if _DEBUG_ENABLED:
+            try:
+                with open(
+                    _DEBUG_DIR / f"{app_id}_store.json", "w", encoding="utf-8"
+                ) as f:
+                    json.dump(app_data, f, ensure_ascii=False, indent=2)
+            except Exception:
+                logger.exception("Failed to write store debug for %s", app_id)
 
         # Extract only necessary data
         cleaned_data = {
@@ -118,6 +150,15 @@ def fetch_steamspy_top_game_ids():
         if page == 0:
             time.sleep(60)
 
+    if _DEBUG_ENABLED:
+        try:
+            with open(
+                _DEBUG_DIR / "steamspy_top_pages.json", "w", encoding="utf-8"
+            ) as f:
+                json.dump(app_ids, f, ensure_ascii=False, indent=2)
+        except Exception:
+            logger.exception("Failed to write steamspy debug file")
+
     return app_ids
 
 
@@ -138,6 +179,15 @@ def fetch_review_summary(app_id):
         response.raise_for_status()
 
         payload = response.json()
+        if _DEBUG_ENABLED:
+            try:
+                with open(
+                    _DEBUG_DIR / f"{app_id}_reviews.json", "w", encoding="utf-8"
+                ) as f:
+                    json.dump(payload, f, ensure_ascii=False, indent=2)
+            except Exception:
+                logger.exception("Failed to write review debug for %s", app_id)
+
         summary = payload.get("query_summary", {})
         review_count = summary.get("total_reviews", 0) or 0
         total_positive = summary.get("total_positive", 0) or 0
@@ -150,6 +200,49 @@ def fetch_review_summary(app_id):
     except requests.RequestException as e:
         logger.warning(f"Error fetching review summary for app {app_id}: {e}")
         return 0, "N/A"
+
+
+def fetch_random_english_reviews(app_id, sample_size=10):
+    """
+    Fetch English reviews from Steam appreviews endpoint and return a random sample.
+    """
+    try:
+        url = f"https://store.steampowered.com/appreviews/{app_id}"
+        params = {
+            "json": 1,
+            "language": "english",
+            "purchase_type": "all",
+            "filter": "all",
+            "num_per_page": 100,
+        }
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+
+        payload = response.json()
+        if _DEBUG_ENABLED:
+            try:
+                with open(
+                    _DEBUG_DIR / f"{app_id}_reviews_english.json",
+                    "w",
+                    encoding="utf-8",
+                ) as f:
+                    json.dump(payload, f, ensure_ascii=False, indent=2)
+            except Exception:
+                logger.exception("Failed to write English review debug for %s", app_id)
+
+        reviews = payload.get("reviews", []) or []
+        english_reviews = [
+            review
+            for review in reviews
+            if review.get("language", "").lower() == "english"
+        ]
+        if len(english_reviews) <= sample_size:
+            return english_reviews
+
+        return random.sample(english_reviews, sample_size)
+    except requests.RequestException as e:
+        logger.warning(f"Error fetching English reviews for app {app_id}: {e}")
+        return []
 
 
 def fetch_comparison_data(app_id):
@@ -187,6 +280,7 @@ def build_comparison_data(app_id, game_info):
     Build the comparison payload from already fetched Steam Store data.
     """
     review_count, review_sentiment = fetch_review_summary(app_id)
+    sampled_reviews = fetch_random_english_reviews(app_id)
 
     price_overview = game_info.get("price_overview")
     if price_overview:
@@ -196,18 +290,34 @@ def build_comparison_data(app_id, game_info):
     else:
         price = "N/A"
 
-    release_date = game_info.get("release_date", {}).get("date", "N/A")
     current_online = fetch_player_count(app_id)
 
     return {
         "app_id": app_id,
         "name": game_info.get("name"),
+        "steam_appid": game_info.get("steam_appid", app_id),
+        "required_age": game_info.get("required_age"),
+        "is_free": game_info.get("is_free"),
+        "short_description": game_info.get("short_description"),
         "header_image": game_info.get("header_image"),
+        "developers": game_info.get("developers", []),
+        "publishers": game_info.get("publishers", []),
+        "platforms": game_info.get("platforms", {}),
+        "metacritic": game_info.get("metacritic"),
+        "categories": game_info.get("categories", []),
+        "genres": game_info.get("genres", []),
+        "screenshots": game_info.get("screenshots", []),
+        "movies": game_info.get("movies", []),
+        "achievements": game_info.get("achievements"),
+        "release_date": game_info.get("release_date", {}).get("date", "N/A"),
+        "background": game_info.get("background"),
+        "content_descriptors": game_info.get("content_descriptors"),
+        "ratings": game_info.get("ratings"),
         "review_count": review_count,
         "review_sentiment": review_sentiment,
-        "release_date": release_date,
         "price": price,
         "current_online": current_online,
+        "reviews": sampled_reviews,
     }
 
 

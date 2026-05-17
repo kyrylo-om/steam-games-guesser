@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import DailyChallenge
 from django.utils import timezone
+from .bootstrap import ensure_daily_challenge
 
 
 class GameViewSet(viewsets.ViewSet):
@@ -13,7 +14,7 @@ class GameViewSet(viewsets.ViewSet):
         GET /api/games/daily_challenge/
         """
         today = timezone.now().date()
-        challenge = DailyChallenge.objects.filter(date=today).first()
+        challenge = ensure_daily_challenge(today)
 
         if not challenge:
             return Response(

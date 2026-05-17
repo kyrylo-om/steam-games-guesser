@@ -10,7 +10,7 @@ from datetime import (
 from django.db import close_old_connections, connection
 from django.utils import timezone
 
-from .models import CachedGame, DailyChallenge, SteamSpyTopGameList
+from .models import DailyChallenge, SteamSpyTopGameList
 from .steam_service import (
     build_comparison_data,
     fetch_game_from_steam,
@@ -23,6 +23,28 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TOP_GAME_LIST_NAME = "default"
 DAILY_ROUND_COUNT = 5
+RICH_GAME_FIELDS = {
+    "name",
+    "steam_appid",
+    "required_age",
+    "is_free",
+    "short_description",
+    "header_image",
+    "developers",
+    "publishers",
+    "platforms",
+    "metacritic",
+    "categories",
+    "genres",
+    "screenshots",
+    "movies",
+    "achievements",
+    "release_date",
+    "background",
+    "content_descriptors",
+    "ratings",
+    "reviews",
+}
 
 _scheduler_started = False
 _scheduler_lock = threading.Lock()
@@ -32,7 +54,6 @@ _bootstrap_lock = threading.Lock()
 def _game_tables_ready():
     existing_tables = set(connection.introspection.table_names())
     return {
-        CachedGame._meta.db_table,
         DailyChallenge._meta.db_table,
         SteamSpyTopGameList._meta.db_table,
     }.issubset(existing_tables)
@@ -47,6 +68,32 @@ def _daily_challenge_pair_count(challenge):
         return 0
 
     return len(pairs)
+
+
+def _payload_has_rich_game_data(payload):
+    if not payload:
+        return False
+
+    pairs = payload.get("pairs", [])
+    if not isinstance(pairs, list) or not pairs:
+        return False
+
+    for pair in pairs:
+        if not isinstance(pair, dict):
+            return False
+
+        for game_key in ("game1", "game2"):
+            game = pair.get(game_key)
+            if not isinstance(game, dict):
+                return False
+
+            if not RICH_GAME_FIELDS.issubset(game.keys()):
+                return False
+
+            if not isinstance(game.get("reviews"), list):
+                return False
+
+    return True
 
 
 def ensure_steamspy_top_game_list():
@@ -73,24 +120,15 @@ def ensure_steamspy_top_game_list():
 
 
 def _ensure_cached_game(app_id):
-    cached_game = CachedGame.objects.filter(app_id=app_id).first()
-
-    if cached_game and not cached_game.is_expired() and cached_game.full_steam_data:
-        return cached_game
-
+    """
+    Fetch game data from Steam without persisting to a per-game cache.
+    Returns tuple (cleaned_data, full_data) or (None, None) on failure.
+    """
     cleaned_data, full_data = fetch_game_from_steam(app_id)
     if not cleaned_data or not full_data:
-        return None
+        return None, None
 
-    cached_game, _ = CachedGame.objects.update_or_create(
-        app_id=app_id,
-        defaults={
-            "name": cleaned_data["name"],
-            "data": cleaned_data,
-            "full_steam_data": full_data,
-        },
-    )
-    return cached_game
+    return cleaned_data, full_data
 
 
 def _build_daily_challenge_payload(target_date):
@@ -102,19 +140,19 @@ def _build_daily_challenge_payload(target_date):
     results = []
 
     for index, (app_id1, app_id2) in enumerate(pairs, start=1):
-        game1 = _ensure_cached_game(app_id1)
-        game2 = _ensure_cached_game(app_id2)
+        cleaned1, full1 = _ensure_cached_game(app_id1)
+        cleaned2, full2 = _ensure_cached_game(app_id2)
 
-        if not game1 or not game2:
+        if not cleaned1 or not full1 or not cleaned2 or not full2:
             logger.warning(
-                "Skipping daily pair %s vs %s because one or both games could not be cached.",
+                "Skipping daily pair %s vs %s because one or both games could not be fetched.",
                 app_id1,
                 app_id2,
             )
             continue
 
-        comparison_game1 = build_comparison_data(app_id1, game1.full_steam_data)
-        comparison_game2 = build_comparison_data(app_id2, game2.full_steam_data)
+        comparison_game1 = build_comparison_data(app_id1, full1)
+        comparison_game2 = build_comparison_data(app_id2, full2)
 
         if not comparison_game1 or not comparison_game2:
             logger.warning(
@@ -147,7 +185,11 @@ def _build_daily_challenge_payload(target_date):
 def ensure_daily_challenge(target_date=None):
     target_date = target_date or timezone.now().date()
     challenge = DailyChallenge.objects.filter(date=target_date).first()
-    if challenge and _daily_challenge_pair_count(challenge) == DAILY_ROUND_COUNT:
+    if (
+        challenge
+        and _daily_challenge_pair_count(challenge) == DAILY_ROUND_COUNT
+        and _payload_has_rich_game_data(challenge.payload)
+    ):
         return challenge
 
     payload = _build_daily_challenge_payload(target_date)
@@ -160,7 +202,9 @@ def ensure_daily_challenge(target_date=None):
 def bootstrap_game_data():
     with _bootstrap_lock:
         if not _game_tables_ready():
-            logger.info("Skipping automatic game bootstrap until migrations are applied.")
+            logger.info(
+                "Skipping automatic game bootstrap until migrations are applied."
+            )
             return False
 
         ensure_steamspy_top_game_list()
