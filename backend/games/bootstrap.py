@@ -23,11 +23,10 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TOP_GAME_LIST_NAME = "default"
 DAILY_ROUND_COUNT = 5
-RICH_GAME_FIELDS = {
+REQUIRED_GAME_FIELDS = {
+    "app_id",
     "name",
     "steam_appid",
-    "required_age",
-    "is_free",
     "short_description",
     "header_image",
     "developers",
@@ -35,19 +34,35 @@ RICH_GAME_FIELDS = {
     "platforms",
     "metacritic",
     "categories",
-    "genres",
     "screenshots",
     "movies",
     "achievements",
     "release_date",
     "background",
-    "content_descriptors",
     "ratings",
     "reviews",
     "review_count",
     "review_sentiment",
     "review_sentiment_label",
     "review_score_desc",
+    "price",
+}
+
+FORBIDDEN_GAME_FIELDS = {
+    "required_age",
+    "is_free",
+    "genres",
+    "content_descriptors",
+    "current_online",
+}
+
+REVIEW_FIELDS = {"author", "review", "voted_up", "timestamp_created"}
+REVIEW_AUTHOR_FIELDS = {
+    "personaname",
+    "num_reviews",
+    "playtime_forever",
+    "playtime_at_review",
+    "avatar_url",
 }
 
 _scheduler_started = False
@@ -74,6 +89,63 @@ def _daily_challenge_pair_count(challenge):
     return len(pairs)
 
 
+def _review_has_current_schema(review):
+    if not isinstance(review, dict):
+        return False
+
+    if set(review.keys()) != REVIEW_FIELDS:
+        return False
+
+    author = review.get("author")
+    if not isinstance(author, dict):
+        return False
+
+    if set(author.keys()) != REVIEW_AUTHOR_FIELDS:
+        return False
+
+    return True
+
+
+def _achievement_highlights_have_current_schema(achievements):
+    if not isinstance(achievements, dict):
+        return True
+
+    highlighted = achievements.get("highlighted", []) or []
+    if not isinstance(highlighted, list):
+        return False
+
+    for item in highlighted:
+        if not isinstance(item, dict):
+            return False
+        if "icon" in item or "name" in item:
+            return False
+
+    return True
+
+
+def _game_has_current_schema(game):
+    if not isinstance(game, dict):
+        return False
+
+    if not REQUIRED_GAME_FIELDS.issubset(game.keys()):
+        return False
+
+    if any(field in game for field in FORBIDDEN_GAME_FIELDS):
+        return False
+
+    reviews = game.get("reviews", [])
+    if not isinstance(reviews, list):
+        return False
+
+    if any(not _review_has_current_schema(review) for review in reviews):
+        return False
+
+    if not _achievement_highlights_have_current_schema(game.get("achievements")):
+        return False
+
+    return True
+
+
 def _payload_has_rich_game_data(payload):
     if not payload:
         return False
@@ -91,10 +163,7 @@ def _payload_has_rich_game_data(payload):
             if not isinstance(game, dict):
                 return False
 
-            if not RICH_GAME_FIELDS.issubset(game.keys()):
-                return False
-
-            if not isinstance(game.get("reviews"), list):
+            if not _game_has_current_schema(game):
                 return False
 
     return True

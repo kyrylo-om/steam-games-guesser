@@ -15,6 +15,11 @@
   overflow: hidden;
 }
 
+.thumbnail-wrapper[data-visible="false"],
+.carousel-wrapper[data-visible="false"] {
+  min-height: 180px;
+}
+
 .thumbnail {
   display: block;
   width: 100%;
@@ -42,6 +47,13 @@
   color: #798a95;
 }
 
+.info-value[data-visible="false"],
+.reviews[data-visible="false"],
+.description[data-visible="false"],
+.price[data-visible="false"] {
+  color: #798a95;
+}
+
 .developers,
 .publishers {
   color: #67c1f5;
@@ -55,6 +67,18 @@
 .reviews {
   color: #798a95;
   margin-top: 16px;
+}
+
+.review-score-desc {
+  color: #c6d4df;
+}
+
+.review-sentiment {
+  color: #c6d4df;
+}
+
+.review-count {
+  color: #67c1f5;
 }
 
 .review-positive {
@@ -167,4 +191,18 @@
   border-radius: 4px;
   background: #0f1d27;
   object-fit: cover;
+}
+
+.media-placeholder,
+.carousel-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  padding: 16px;
+  text-align: center;
+  color: #798a95;
+  border: 1px dashed #0f1d27;
+  border-radius: 4px;
+  background: #0f1d27;
 }

@@ -24,6 +24,16 @@ STEAM_STORE_API_URL = "https://store.steampowered.com/api/"
 STEAM_OFFICIAL_API_URL = "https://api.steampowered.com/"
 STEAMSPY_API_URL = "https://steamspy.com/api.php"
 
+REVIEW_AUTHOR_FIELDS = {
+    "personaname",
+    "num_reviews",
+    "playtime_forever",
+    "playtime_at_review",
+    "avatar_url",
+}
+
+REVIEW_FIELDS = {"author", "review", "voted_up", "timestamp_created"}
+
 
 def fetch_player_count(app_id):
     """
@@ -51,6 +61,56 @@ def fetch_player_count(app_id):
     except requests.RequestException as e:
         logger.warning(f"Error fetching player count for app {app_id}: {e}")
         return 0
+
+
+def _normalize_achievement_highlights(achievements):
+    if not isinstance(achievements, dict):
+        return achievements
+
+    normalized = {}
+
+    if "total" in achievements:
+        normalized["total"] = achievements.get("total")
+
+    highlighted = []
+    for item in achievements.get("highlighted", []) or []:
+        if not isinstance(item, dict):
+            continue
+
+        normalized_item = {}
+        if item.get("localized_name") is not None:
+            normalized_item["localized_name"] = item.get("localized_name")
+        if item.get("path") is not None:
+            normalized_item["path"] = item.get("path")
+
+        if normalized_item:
+            highlighted.append(normalized_item)
+
+    if highlighted:
+        normalized["highlighted"] = highlighted
+
+    return normalized
+
+
+def _normalize_review(review):
+    author = review.get("author") or {}
+    avatar = author.get("avatar")
+    avatar_url = None
+    if avatar:
+        avatar_url = f"https://avatars.akamai.steamstatic.com/{avatar}_full.jpg"
+
+    return {
+        "author": {
+            "personaname": author.get("personaname"),
+            "num_reviews": author.get("num_reviews"),
+            "playtime_forever": author.get("playtime_forever"),
+            "playtime_at_review": author.get("playtime_at_review"),
+            "avatar_url": avatar_url,
+        },
+        "review": review.get("review"),
+        "voted_up": review.get("voted_up"),
+        "timestamp_created": review.get("timestamp_created"),
+    }
 
 
 def fetch_game_from_steam(app_id):
@@ -281,7 +341,9 @@ def build_comparison_data(app_id, game_info):
     Build the comparison payload from already fetched Steam Store data.
     """
     review_count, review_sentiment, review_score_desc = fetch_review_summary(app_id)
-    sampled_reviews = fetch_random_english_reviews(app_id)
+    sampled_reviews = [
+        _normalize_review(review) for review in fetch_random_english_reviews(app_id)
+    ]
 
     review_sentiment_label = review_score_desc or review_sentiment
 
@@ -293,14 +355,10 @@ def build_comparison_data(app_id, game_info):
     else:
         price = "N/A"
 
-    current_online = fetch_player_count(app_id)
-
     return {
         "app_id": app_id,
         "name": game_info.get("name"),
         "steam_appid": game_info.get("steam_appid", app_id),
-        "required_age": game_info.get("required_age"),
-        "is_free": game_info.get("is_free"),
         "short_description": game_info.get("short_description"),
         "header_image": game_info.get("header_image"),
         "developers": game_info.get("developers", []),
@@ -308,20 +366,19 @@ def build_comparison_data(app_id, game_info):
         "platforms": game_info.get("platforms", {}),
         "metacritic": game_info.get("metacritic"),
         "categories": game_info.get("categories", []),
-        "genres": game_info.get("genres", []),
         "screenshots": game_info.get("screenshots", []),
         "movies": game_info.get("movies", []),
-        "achievements": game_info.get("achievements"),
+        "achievements": _normalize_achievement_highlights(
+            game_info.get("achievements")
+        ),
         "release_date": game_info.get("release_date", {}).get("date", "N/A"),
         "background": game_info.get("background"),
-        "content_descriptors": game_info.get("content_descriptors"),
         "ratings": game_info.get("ratings"),
         "review_count": review_count,
         "review_sentiment": review_sentiment,
         "review_sentiment_label": review_sentiment_label,
         "review_score_desc": review_score_desc,
         "price": price,
-        "current_online": current_online,
         "reviews": sampled_reviews,
     }
 
