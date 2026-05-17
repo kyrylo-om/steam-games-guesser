@@ -68,3 +68,56 @@
 .review-negative {
   color: #c85e2d;
 }
+
+.purchase-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background-image: linear-gradient(
+    -60deg,
+    rgba(226, 244, 255, 0.3) 5%,
+    rgba(84, 107, 115, 0.3) 95%
+  );
+  padding: 8px 16px;
+  margin-top: 8px;
+  border-radius: 2px;
+}
+
+.purchase-text {
+  font-size: 1.5rem;
+}
+
+.price-container {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  background-color: black;
+  width: fit-content;
+  justify-content: center;
+  align-items: center;
+  border: 4px black;
+  box-sizing: border-box;
+  border-radius: 2px;
+}
+
+.price-button {
+  background-image: linear-gradient(
+    to right,
+    rgb(117, 176, 34) 5%,
+    rgb(88, 138, 27) 95%
+  );
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+  padding: 4px 16px;
+  border-radius: 2px;
+  margin-left: 4px;
+}
+
+.price {
+  padding: 8px;
+}
+
+.carousel-wrapper {
+  margin-top: 8px;
+}

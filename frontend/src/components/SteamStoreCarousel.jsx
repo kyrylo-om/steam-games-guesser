@@ -195,7 +195,7 @@ const SteamStoreCarousel = ({ game, headerImage }) => {
   };
 
   return (
-    <div className={styles.carouselWrapper}>
+    <>
       <div className={styles.carouselStage}>
         {activeMedia?.kind === "movie" ? (
           <div className={styles.carouselMovieShell}>
@@ -301,7 +301,7 @@ const SteamStoreCarousel = ({ game, headerImage }) => {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

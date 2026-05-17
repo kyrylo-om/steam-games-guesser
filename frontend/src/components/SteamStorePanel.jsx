@@ -43,7 +43,7 @@ const SteamStorePanel = ({ game }) => {
         <p className={styles.description}>{description}</p>
 
         <div className={styles.reviews}>
-          REVIEWS:
+          Reviews:
           <span
             className={`${styles.reviewScoreDesc} ${_reviewColorClass(reviewScoreDesc)}`}
           >
@@ -58,9 +58,19 @@ const SteamStorePanel = ({ game }) => {
           <span className={styles.reviewCount}>{formattedReviewCount}</span>
           {")"}
         </div>
-      </div>
 
-      <SteamStoreCarousel game={game} headerImage={headerImage} />
+        <div className={styles.carouselWrapper}>
+          <SteamStoreCarousel game={game} headerImage={headerImage} />
+        </div>
+
+        <div className={styles.purchaseContainer}>
+          <span className={styles.purchaseText}>Buy {name}</span>
+          <div className={styles.priceContainer}>
+            <span className={styles.priceButton}>Price:</span>
+            <span className={styles.price}>{game.price}</span>
+          </div>
+        </div>
+      </div>
     </section>
   );
 };
