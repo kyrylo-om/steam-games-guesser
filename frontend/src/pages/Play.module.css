@@ -31,6 +31,13 @@
   box-shadow: inset 0 0 0 2px rgba(20, 184, 166, 0.45);
 }
 
+.center {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+}
+
 .state {
   min-height: 100vh;
   display: flex;
@@ -49,5 +56,10 @@
     padding: 20px;
     max-width: none;
     justify-self: stretch;
+  }
+
+  .center {
+    position: static;
+    height: auto;
   }
 }

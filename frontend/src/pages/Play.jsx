@@ -37,7 +37,9 @@ const Play = () => {
         <SteamStorePanel game={leftGame} />
       </section>
 
-      <CenterSpine />
+      <section className={styles.center}>
+        <CenterSpine />
+      </section>
 
       <section
         className={styles.side}
