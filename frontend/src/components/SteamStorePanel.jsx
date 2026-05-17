@@ -1,3 +1,4 @@
+import EmptySlot from "./EmptySlot";
 import styles from "./SteamStorePanel.module.css";
 import SteamStoreCarousel from "./SteamStoreCarousel";
 
@@ -23,6 +24,9 @@ const SteamStorePanel = ({ game, isRevealed = false, revealFields = [] }) => {
     isRevealed && visibleFields.has("review_sentiment");
   const showPrice = isRevealed && visibleFields.has("price");
   const showAchievements = isRevealed && visibleFields.has("achievements");
+  const showInfoSection =
+    showDeveloper && showPublisher && showReleaseDate;
+  const showReviewsSection = showReviews && showReviewSentiment;
 
   const _reviewColorClass = (desc) => {
     if (!desc) return styles.reviewMixed;
@@ -35,92 +39,86 @@ const SteamStorePanel = ({ game, isRevealed = false, revealFields = [] }) => {
 
   return (
     <section className={styles.panel}>
-      <div className={styles.thumbnailWrapper} data-visible={showMedia}>
+      <div className={styles.thumbnailWrapper}>
         {showMedia ? (
           <img className={styles.thumbnail} src={headerImage} alt={name} />
         ) : (
-          <div className={styles.mediaPlaceholder}>Answer to reveal media</div>
+          <EmptySlot />
         )}
       </div>
 
       <div className={styles.content}>
         <h1 className={styles.gameName}>{name}</h1>
 
-        <div className={styles.info}>
-          <ul className={styles.infoKeys}>
-            <li>Developer</li>
-            <li>Publisher</li>
-            <li>Released</li>
-          </ul>
+        {showInfoSection ? (
+          <div className={styles.info}>
+            <ul className={styles.infoKeys}>
+              <li>Developer</li>
+              <li>Publisher</li>
+              <li>Released</li>
+            </ul>
 
-          <ul className={styles.infoValues}>
-            <li className={styles.infoValue} data-visible={showDeveloper}>
-              {showDeveloper
-                ? game.developers?.join(", ")
-                : "Hidden until answer"}
-            </li>
-            <li className={styles.infoValue} data-visible={showPublisher}>
-              {showPublisher
-                ? game.publishers?.join(", ")
-                : "Hidden until answer"}
-            </li>
-            <li className={styles.infoValue} data-visible={showReleaseDate}>
-              {showReleaseDate ? game.release_date : "Hidden until answer"}
-            </li>
-          </ul>
+            <ul className={styles.infoValues}>
+              <li className={styles.infoValue}>
+                {game.developers?.join(", ")}
+              </li>
+              <li className={styles.infoValue}>
+                {game.publishers?.join(", ")}
+              </li>
+              <li className={styles.infoValue}>{game.release_date}</li>
+            </ul>
+          </div>
+        ) : (
+          <EmptySlot />
+        )}
+
+        <p className={styles.description}>{description}</p>
+
+        <div className={styles.reviews}>
+          {showReviewsSection ? (
+            <>
+              Reviews:{" "}
+              <span
+                className={`${styles.reviewScoreDesc} ${_reviewColorClass(reviewScoreDesc)}`}
+              >
+                {reviewScoreDesc}
+              </span>
+              {" ("}
+              <span className={styles.reviewSentiment}>
+                {game.review_sentiment}
+              </span>
+              {" of "}
+              <span className={styles.reviewCount}>{formattedReviewCount}</span>
+              {")"}
+            </>
+          ) : (
+            <EmptySlot />
+          )}
         </div>
 
-        <p className={styles.description} data-visible={showMedia}>
-          {showMedia ? description : "Answer to reveal description and media."}
-        </p>
-
-        <div
-          className={styles.reviews}
-          data-visible={showReviews || showReviewSentiment}
-        >
-          Reviews:
-          <span
-            className={`${styles.reviewScoreDesc} ${_reviewColorClass(reviewScoreDesc)}`}
-          >
-            {showReviewSentiment
-              ? ` ${reviewScoreDesc}`
-              : " Hidden until answer"}
-          </span>
-          {" ("}
-          <span className={styles.reviewSentiment}>
-            {showReviewSentiment ? game.review_sentiment : "Hidden"}
-          </span>
-          {" of "}
-          <span className={styles.reviewCount}>
-            {showReviews ? formattedReviewCount : "Hidden"}
-          </span>
-          {")"}
-        </div>
-
-        <div className={styles.carouselWrapper} data-visible={showMedia}>
+        <div className={styles.carouselWrapper}>
           {showMedia ? (
             <SteamStoreCarousel game={game} headerImage={headerImage} />
           ) : (
-            <div className={styles.carouselPlaceholder}>
-              Carousel unlocks after answer
-            </div>
+            <EmptySlot />
           )}
         </div>
 
         <div className={styles.purchaseContainer}>
-          <span className={styles.purchaseText}>Buy {name}</span>
-          <div className={styles.priceContainer}>
-            <span className={styles.priceButton}>Price:</span>
-            <span className={styles.price} data-visible={showPrice}>
-              {showPrice ? game.price : "Hidden"}
-            </span>
-          </div>
+          {showPrice ? (
+            <>
+              <span className={styles.purchaseText}>Buy {name}</span>
+              <div className={styles.priceContainer}>
+                <span className={styles.priceButton}>Price:</span>
+                <span className={styles.price}>{game.price}</span>
+              </div>
+            </>
+          ) : (
+            <EmptySlot />
+          )}
         </div>
 
-        <div
-          className={styles.achievementsContainer}
-          data-visible={showAchievements}
-        >
+        <div className={styles.achievementsContainer}>
           {showAchievements ? (
             <>
               <div className={styles.achievementsTextContainer}>
@@ -149,9 +147,7 @@ const SteamStorePanel = ({ game, isRevealed = false, revealFields = [] }) => {
               </div>
             </>
           ) : (
-            <div className={styles.achievementsPlaceholder}>
-              Answer to reveal achievements
-            </div>
+            <EmptySlot />
           )}
         </div>
       </div>

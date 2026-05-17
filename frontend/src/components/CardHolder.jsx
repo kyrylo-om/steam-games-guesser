@@ -1,10 +1,10 @@
 import QuestionCard from "./QuestionCard";
 import styles from "./CardHolder.module.css";
 
-const CardHolder = () => {
+const CardHolder = ({ question, clue, questionKey }) => {
   return (
     <section className={styles.panel}>
-      <QuestionCard question="Which game costs more?" />
+      <QuestionCard key={questionKey} question={question} clue={clue} />
     </section>
   );
 };

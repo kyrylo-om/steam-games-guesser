@@ -13,10 +13,6 @@
   width: 100%;
   height: max-content;
   overflow: hidden;
-}
-
-.thumbnail-wrapper[data-visible="false"],
-.carousel-wrapper[data-visible="false"] {
   min-height: 180px;
 }
 
@@ -47,12 +43,16 @@
   color: #798a95;
 }
 
-.info-value[data-visible="false"],
-.reviews[data-visible="false"],
-.description[data-visible="false"],
-.price[data-visible="false"] {
-  color: #798a95;
+.info-values {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
+
+.info-value {
+  color: #c6d4df;
+}
+
 
 .developers,
 .publishers {
@@ -144,6 +144,7 @@
 
 .carousel-wrapper {
   margin-top: 8px;
+  min-height: 180px;
 }
 
 .achievements-text {
@@ -193,16 +194,3 @@
   object-fit: cover;
 }
 
-.media-placeholder,
-.carousel-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 180px;
-  padding: 16px;
-  text-align: center;
-  color: #798a95;
-  border: 1px dashed #0f1d27;
-  border-radius: 4px;
-  background: #0f1d27;
-}

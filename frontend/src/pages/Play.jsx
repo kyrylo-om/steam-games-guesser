@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import CenterSpine from "../components/CenterSpine";
 import SteamStorePanel from "../components/SteamStorePanel";
 import { useDailyChallenge } from "../hooks/useDailyChallenge";
@@ -15,6 +15,8 @@ const Play = () => {
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
   const [questionResults, setQuestionResults] = useState({});
   const [revealedFields, setRevealedFields] = useState([]);
+  const [flashResult, setFlashResult] = useState(null);
+  const flashTimeoutRef = useRef(null);
 
   const pair = useMemo(() => data?.pairs?.[1] ?? null, [data]);
   const totalQuestions = QUESTION_DEFS.length;
@@ -30,6 +32,22 @@ const Play = () => {
   const rightGame = pair?.game2 ?? null;
   const visibleFields = isComplete ? GAME_REVEAL_FIELDS : revealedFields;
   const hasUnlockedContent = visibleFields.length > 0 || isComplete;
+  const leftPickLabel = leftGame?.name ? `Pick ${leftGame.name}` : "Pick game";
+  const rightPickLabel = rightGame?.name
+    ? `Pick ${rightGame.name}`
+    : "Pick game";
+  const leftFlash =
+    flashResult?.side === "left"
+      ? flashResult.isCorrect
+        ? "correct"
+        : "wrong"
+      : "";
+  const rightFlash =
+    flashResult?.side === "right"
+      ? flashResult.isCorrect
+        ? "correct"
+        : "wrong"
+      : "";
 
   const score = Object.values(questionResults).reduce(
     (total, result) => total + (result?.isCorrect ? 1 : 0),
@@ -41,16 +59,28 @@ const Play = () => {
       return;
     }
 
+    const isLastQuestion = viewQuestionIndex === totalQuestions - 1;
+
+    const isCorrect = roundModel.correctSide
+      ? side === roundModel.correctSide
+      : false;
+
     setQuestionResults((previousResults) => ({
       ...previousResults,
       [activeQuestionIndex]: {
         selectedSide: side,
-        isCorrect: roundModel.correctSide
-          ? side === roundModel.correctSide
-          : null,
+        isCorrect,
         correctSide: roundModel.correctSide,
       },
     }));
+
+    if (flashTimeoutRef.current) {
+      clearTimeout(flashTimeoutRef.current);
+    }
+    setFlashResult({ side, isCorrect });
+    flashTimeoutRef.current = window.setTimeout(() => {
+      setFlashResult(null);
+    }, 600);
 
     setRevealedFields((previousFields) => {
       const nextFields = new Set(previousFields);
@@ -65,15 +95,10 @@ const Play = () => {
       return Array.from(nextFields);
     });
 
-    if (viewQuestionIndex === totalQuestions - 1) {
-      setActiveQuestionIndex(totalQuestions);
-    }
-  };
-
-  const handleNextRound = () => {
-    setHoveredSide(null);
     setActiveQuestionIndex((currentIndex) =>
-      Math.min(currentIndex + 1, totalQuestions),
+      isLastQuestion
+        ? totalQuestions
+        : Math.min(currentIndex + 1, totalQuestions),
     );
   };
 
@@ -94,11 +119,16 @@ const Play = () => {
         data-active={
           hoveredSide === "left" || activeResult?.selectedSide === "left"
         }
+        data-hovered={hoveredSide === "left"}
         data-selected={activeResult?.selectedSide === "left"}
+        data-flash={leftFlash}
         onMouseEnter={() => setHoveredSide("left")}
         onMouseLeave={() => setHoveredSide(null)}
         onClick={() => handleSideSelect("left")}
       >
+        <div className={styles.pickOverlay} aria-hidden="true">
+          <span className={styles.pickLabel}>{leftPickLabel}</span>
+        </div>
         <SteamStorePanel
           game={leftGame}
           isRevealed={hasUnlockedContent}
@@ -112,7 +142,7 @@ const Play = () => {
         currentRound={isComplete ? totalQuestions : activeQuestionIndex + 1}
         isAnswered={answered}
         isComplete={isComplete}
-        onNextRound={handleNextRound}
+        questionIndex={viewQuestionIndex}
         prompt={roundModel.prompt}
         score={score}
         totalRounds={totalQuestions}
@@ -124,11 +154,16 @@ const Play = () => {
         data-active={
           hoveredSide === "right" || activeResult?.selectedSide === "right"
         }
+        data-hovered={hoveredSide === "right"}
         data-selected={activeResult?.selectedSide === "right"}
+        data-flash={rightFlash}
         onMouseEnter={() => setHoveredSide("right")}
         onMouseLeave={() => setHoveredSide(null)}
         onClick={() => handleSideSelect("right")}
       >
+        <div className={styles.pickOverlay} aria-hidden="true">
+          <span className={styles.pickLabel}>{rightPickLabel}</span>
+        </div>
         <SteamStorePanel
           game={rightGame}
           isRevealed={hasUnlockedContent}
