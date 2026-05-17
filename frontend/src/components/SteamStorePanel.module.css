@@ -80,13 +80,13 @@
     rgba(226, 244, 255, 0.3) 5%,
     rgba(84, 107, 115, 0.3) 95%
   );
-  padding: 8px 16px;
-  margin-top: 8px;
+  padding: 10px 16px;
+  margin-top: 16px;
   border-radius: 2px;
 }
 
 .purchase-text {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .price-container {
@@ -120,4 +120,51 @@
 
 .carousel-wrapper {
   margin-top: 8px;
+}
+
+.achievements-text {
+  font-size: 1rem;
+}
+
+.achievement-count-text {
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.7rem;
+}
+
+.achievements-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-image: linear-gradient(
+    -60deg,
+    rgba(57, 92, 113, 0.3) 5%,
+    rgba(88, 145, 164, 0.3) 95%
+  );
+  padding: 10px 16px;
+  margin-top: 16px;
+  border-radius: 2px;
+}
+
+.achievements-text-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.achievement-icons-container {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  overflow: auto;
+  margin-left: 1.5rem;
+  
+}
+
+.achievement-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 4px;
+  background: #0f1d27;
+  object-fit: cover;
 }

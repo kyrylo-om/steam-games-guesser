@@ -7,6 +7,10 @@ const SteamStorePanel = ({ game }) => {
   const headerImage = game.header_image;
   const formattedReviewCount = game.review_count.toLocaleString();
   const reviewScoreDesc = game.review_score_desc;
+  const achievementCount = game.achievements.total;
+  const achievementIcons = Array.isArray(game?.achievements?.highlighted)
+    ? game.achievements.highlighted
+    : [];
 
   const _reviewColorClass = (desc) => {
     if (!desc) return styles.reviewMixed;
@@ -68,6 +72,31 @@ const SteamStorePanel = ({ game }) => {
           <div className={styles.priceContainer}>
             <span className={styles.priceButton}>Price:</span>
             <span className={styles.price}>{game.price}</span>
+          </div>
+        </div>
+
+        <div className={styles.achievementsContainer}>
+          <div className={styles.achievementsTextContainer}>
+            <span className={styles.achievementsText}>Achievements</span>
+            <span className={styles.achievementCountText}>{achievementCount}</span>
+          </div>
+          <div className={styles.achievementIconsContainer}>
+            {achievementIcons.map((achievement, index) => {
+              const icon =
+                achievement?.path ||
+                (typeof achievement === "string" ? achievement : null);
+
+              if (!icon) return null;
+
+              return (
+                <img
+                  key={achievement?.name || `${name}-achievement-${index}`}
+                  className={styles.achievementIcon}
+                  src={icon}
+                  alt={achievement?.name || `Achievement ${index + 1}`}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
