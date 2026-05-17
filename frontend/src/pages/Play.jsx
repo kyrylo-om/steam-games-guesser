@@ -13,7 +13,6 @@ const Play = () => {
   const leftGame = pair?.game1 ?? null;
   const rightGame = pair?.game2 ?? null;
 
-  const prompt = "Which game costs more?";
 
   if (isLoading) {
     return <main className={styles.state}>Loading daily challenge...</main>;
@@ -38,7 +37,7 @@ const Play = () => {
         <SteamStorePanel game={leftGame} />
       </section>
 
-      <CenterSpine prompt={prompt} />
+      <CenterSpine />
 
       <section
         className={styles.side}
