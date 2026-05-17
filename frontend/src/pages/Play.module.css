@@ -1,13 +1,26 @@
 .page {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 160px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 43rem) minmax(160px, 1fr) minmax(0, 43rem);
   min-height: 100vh;
 }
 
 .side {
   padding: 24px;
+  width: 100%;
+  max-width: 43rem;
   cursor: pointer;
-  transition: background-color 120ms ease, box-shadow 120ms ease;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+  box-sizing: border-box;
+}
+
+.side:first-child {
+  justify-self: end;
+}
+
+.side:last-child {
+  justify-self: start;
 }
 
 .side[data-active="true"] {
@@ -34,5 +47,7 @@
 
   .side {
     padding: 20px;
+    max-width: none;
+    justify-self: stretch;
   }
 }

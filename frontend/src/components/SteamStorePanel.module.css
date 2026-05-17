@@ -1,79 +1,70 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-  background: var(--card);
-  border: 1px solid var(--stroke);
-  border-radius: 12px;
+  background: #16242f;
+  border-radius: 4px;
   min-height: 100%;
-}
-
-.header {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 16px;
-  align-items: start;
-}
-
-.thumbWrap {
   width: 100%;
+  color: #c6d4df;
+  font-size: 0.9rem;
 }
 
-.thumb {
+.thumbnail-wrapper {
   width: 100%;
-  height: auto;
-  border-radius: 8px;
+  height: max-content;
+  overflow: hidden;
+}
+
+.thumbnail {
+  display: block;
+  width: 100%;
+  max-width: 100%;
   object-fit: cover;
+  height: auto;
 }
 
-.thumbPlaceholder {
-  width: 100%;
-  padding-top: 56.25%;
-  border-radius: 8px;
-  background: rgba(248, 250, 252, 0.08);
-  border: 1px dashed rgba(248, 250, 252, 0.2);
+.content {
+  padding: 8px;
 }
 
-.textBlock {
+.game-name {
+  font-weight: 400;
+  color: white;
+}
+
+.info {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  gap: 8px;
 }
 
-.title {
-  font-family: var(--display-font);
-  font-size: 1.4rem;
-  letter-spacing: 0.02em;
+.info-keys {
+  color: #798a95;
+}
+
+.developers,
+.publishers {
+  color: #67c1f5;
 }
 
 .description {
-  color: var(--muted);
-  font-size: 0.95rem;
+  margin-top: 16px;
+  font-size: 0.9rem;
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px 16px;
+.reviews {
+  color: #798a95;
+  margin-top: 16px;
 }
 
-.stat {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.review-positive {
+  color: #67c1f5;
 }
 
-.label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
+.review-mixed {
+  color: #f0ad4e;
 }
 
-.slot {
-  height: 34px;
-  border-radius: 6px;
-  border: 1px solid rgba(248, 250, 252, 0.2);
-  background: rgba(248, 250, 252, 0.06);
+.review-negative {
+  color: #c85e2d;
 }

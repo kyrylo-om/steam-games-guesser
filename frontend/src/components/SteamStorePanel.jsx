@@ -1,43 +1,66 @@
 import styles from "./SteamStorePanel.module.css";
+import SteamStoreCarousel from "./SteamStoreCarousel";
 
 const SteamStorePanel = ({ game }) => {
-  const name = game?.name ?? "Unknown title";
-  const description = game?.short_description ?? "Description unavailable.";
-  const headerImage = game?.header_image ?? "";
+  const name = game.name;
+  const description = game.short_description;
+  const headerImage = game.header_image;
+  const formattedReviewCount = game.review_count.toLocaleString();
+  const reviewScoreDesc = game.review_score_desc;
+
+  const _reviewColorClass = (desc) => {
+    if (!desc) return styles.reviewMixed;
+    const d = String(desc).toLowerCase();
+    if (d.includes("positive")) return styles.reviewPositive;
+    if (d.includes("mixed")) return styles.reviewMixed;
+    if (d.includes("negative")) return styles.reviewNegative;
+    return styles.reviewMixed;
+  };
 
   return (
     <section className={styles.panel}>
-      <div className={styles.header}>
-        <div className={styles.thumbWrap}>
-          {headerImage ? (
-            <img className={styles.thumb} src={headerImage} alt={name} />
-          ) : (
-            <div className={styles.thumbPlaceholder} />
-          )}
+      <div className={styles.thumbnailWrapper}>
+        <img className={styles.thumbnail} src={headerImage} alt={name} />
+      </div>
+
+      <div className={styles.content}>
+        <h1 className={styles.gameName}>{name}</h1>
+
+        <div className={styles.info}>
+          <ul className={styles.infoKeys}>
+            <li>Developer</li>
+            <li>Publisher</li>
+            <li>Released</li>
+          </ul>
+
+          <ul className={styles.infoValues}>
+            <li className={styles.developers}>{game.developers.join(", ")}</li>
+            <li className={styles.publishers}>{game.publishers.join(", ")}</li>
+            <li>{game.release_date}</li>
+          </ul>
         </div>
-        <div className={styles.textBlock}>
-          <h2 className={styles.title}>{name}</h2>
-          <p className={styles.description}>{description}</p>
+
+        <p className={styles.description}>{description}</p>
+
+        <div className={styles.reviews}>
+          REVIEWS:
+          <span
+            className={`${styles.reviewScoreDesc} ${_reviewColorClass(reviewScoreDesc)}`}
+          >
+            {" "}
+            {reviewScoreDesc}
+          </span>
+          {" ("}
+          <span className={styles.reviewSentiment}>
+            {game.review_sentiment}
+          </span>
+          {" of "}
+          <span className={styles.reviewCount}>{formattedReviewCount}</span>
+          {")"}
         </div>
       </div>
-      <div className={styles.stats}>
-        <div className={styles.stat}>
-          <span className={styles.label}>Price</span>
-          <span className={styles.slot} />
-        </div>
-        <div className={styles.stat}>
-          <span className={styles.label}>Reviews</span>
-          <span className={styles.slot} />
-        </div>
-        <div className={styles.stat}>
-          <span className={styles.label}>Release</span>
-          <span className={styles.slot} />
-        </div>
-        <div className={styles.stat}>
-          <span className={styles.label}>Players</span>
-          <span className={styles.slot} />
-        </div>
-      </div>
+
+      <SteamStoreCarousel game={game} headerImage={headerImage} />
     </section>
   );
 };

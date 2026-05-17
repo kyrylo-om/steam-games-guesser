@@ -191,15 +191,16 @@ def fetch_review_summary(app_id):
         summary = payload.get("query_summary", {})
         review_count = summary.get("total_reviews", 0) or 0
         total_positive = summary.get("total_positive", 0) or 0
+        review_score_desc = summary.get("review_score_desc")
         if review_count > 0:
-            positive_percentage = round((total_positive / review_count) * 100)
-            review_sentiment = f"{positive_percentage}%"
+            percent = round((total_positive / review_count) * 100)
+            review_sentiment = f"{percent}%"
         else:
             review_sentiment = "N/A"
-        return review_count, review_sentiment
+        return review_count, review_sentiment, review_score_desc
     except requests.RequestException as e:
         logger.warning(f"Error fetching review summary for app {app_id}: {e}")
-        return 0, "N/A"
+        return 0, "N/A", None
 
 
 def fetch_random_english_reviews(app_id, sample_size=10):
@@ -279,8 +280,10 @@ def build_comparison_data(app_id, game_info):
     """
     Build the comparison payload from already fetched Steam Store data.
     """
-    review_count, review_sentiment = fetch_review_summary(app_id)
+    review_count, review_sentiment, review_score_desc = fetch_review_summary(app_id)
     sampled_reviews = fetch_random_english_reviews(app_id)
+
+    review_sentiment_label = review_score_desc or review_sentiment
 
     price_overview = game_info.get("price_overview")
     if price_overview:
@@ -315,6 +318,8 @@ def build_comparison_data(app_id, game_info):
         "ratings": game_info.get("ratings"),
         "review_count": review_count,
         "review_sentiment": review_sentiment,
+        "review_sentiment_label": review_sentiment_label,
+        "review_score_desc": review_score_desc,
         "price": price,
         "current_online": current_online,
         "reviews": sampled_reviews,

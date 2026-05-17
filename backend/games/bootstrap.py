@@ -44,6 +44,10 @@ RICH_GAME_FIELDS = {
     "content_descriptors",
     "ratings",
     "reviews",
+    "review_count",
+    "review_sentiment",
+    "review_sentiment_label",
+    "review_score_desc",
 }
 
 _scheduler_started = False
