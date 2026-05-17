@@ -1,0 +1,16 @@
+.spine {
+  height: 100%;
+  background: rgba(8, 12, 18, 0.9);
+  border-left: 1px solid var(--stroke);
+  border-right: 1px solid var(--stroke);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 12px;
+}
+
+.prompt {
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
