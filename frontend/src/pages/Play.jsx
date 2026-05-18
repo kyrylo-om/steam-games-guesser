@@ -165,20 +165,22 @@ const Play = () => {
         />
       </section>
 
-      <CenterSpine
-        clue={roundModel.clue}
-        correctSide={roundModel.correctSide}
-        currentRound={isComplete ? totalQuestions : activeQuestionIndex + 1}
-        isAnswered={answered}
-        isComplete={isComplete}
-        questionIndex={viewQuestionIndex}
-        questionStepIndex={isComplete ? 0 : questionStepIndex}
-        questionStepCount={isComplete ? 1 : clueCount}
-        prompt={roundModel.prompt}
-        score={score}
-        totalRounds={totalQuestions}
-        selectedSide={activeResult?.selectedSide ?? null}
-      />
+      <div className={styles.center}>
+        <CenterSpine
+          clue={roundModel.clue}
+          correctSide={roundModel.correctSide}
+          currentRound={isComplete ? totalQuestions : activeQuestionIndex + 1}
+          isAnswered={answered}
+          isComplete={isComplete}
+          questionIndex={viewQuestionIndex}
+          questionStepIndex={isComplete ? 0 : questionStepIndex}
+          questionStepCount={isComplete ? 1 : clueCount}
+          prompt={roundModel.prompt}
+          score={score}
+          totalRounds={totalQuestions}
+          selectedSide={activeResult?.selectedSide ?? null}
+        />
+      </div>
 
       <section
         className={styles.side}
