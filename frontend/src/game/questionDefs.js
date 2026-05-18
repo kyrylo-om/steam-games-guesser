@@ -112,18 +112,63 @@ const parsePriceValue = (price) => {
   return Number.isFinite(value) ? value : null;
 };
 
-const getSentimentRank = (game) => {
-  const source = String(game?.review_score_desc || game?.review_sentiment || "")
-    .toLowerCase()
-    .trim();
+const parseSentimentPercent = (game) => {
+  const candidates = [
+    game?.review_score_desc,
+    game?.review_sentiment,
+    game?.reviews?.[0]?.review, // sometimes review text can include percent
+  ];
 
-  for (const [label, rank] of SENTIMENT_RANKS) {
-    if (source.includes(label)) {
-      return rank;
+  for (const raw of candidates) {
+    if (!raw) continue;
+    const s = String(raw).toLowerCase();
+    // look for patterns like 93% or 93 %
+    const m = s.match(/(\d{1,3})\s*%/);
+    if (m) {
+      const v = Number.parseInt(m[1], 10);
+      if (!Number.isNaN(v)) return Math.max(0, Math.min(100, v));
+    }
+    // look for patterns like "93 percent" or "93percent"
+    const m2 = s.match(/(\d{1,3})\s*(?:percent|pct)/);
+    if (m2) {
+      const v = Number.parseInt(m2[1], 10);
+      if (!Number.isNaN(v)) return Math.max(0, Math.min(100, v));
     }
   }
 
-  return 0;
+  return null;
+};
+
+const getSentimentRank = (game) => {
+  // Prefer explicit percentages when present
+  const pct = parseSentimentPercent(game);
+  if (pct !== null) return pct;
+
+  const source = String(game?.review_score_desc || game?.review_sentiment || "").toLowerCase().trim();
+  for (const [label, rank] of SENTIMENT_RANKS) {
+    if (source.includes(label)) {
+      switch (rank) {
+        case 5:
+          return 98;
+        case 4:
+          return 85;
+        case 3:
+          return 70;
+        case 2:
+          return 50;
+        case 1:
+          return 30;
+        case 0:
+          return 15;
+        case -1:
+          return 5;
+        default:
+          return 50;
+      }
+    }
+  }
+
+  return 50;
 };
 
 const compareGames = (pair, field) => {

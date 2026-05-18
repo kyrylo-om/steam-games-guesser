@@ -1,6 +1,5 @@
 import AppHeader from "./AppHeader";
 import CardHolder from "./CardHolder";
-import PowerUpPanel from "./PowerUpPanel";
 import styles from "./CenterSpine.module.css";
 
 const CenterSpine = ({
