@@ -10,6 +10,8 @@ const CenterSpine = ({
   isComplete,
   isAnswered,
   questionIndex,
+  questionStepIndex,
+  questionStepCount,
   prompt,
   score,
   selectedSide,
@@ -52,7 +54,9 @@ const CenterSpine = ({
         <CardHolder
           question={cardQuestion}
           clue={cardClue}
-          questionKey={questionIndex}
+          questionKey={`${questionIndex}-${questionStepIndex}`}
+          stepIndex={questionStepIndex}
+          stepCount={questionStepCount}
         />
         {isComplete ? (
           <section className={styles.answerState} data-correct="true">

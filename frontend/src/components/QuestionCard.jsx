@@ -1,10 +1,16 @@
 import styles from "./QuestionCard.module.css";
 
-const QuestionCard = ({ question = "Which game costs more?", clue }) => {
+const QuestionCard = ({
+  question = "Which game costs more?",
+  clue,
+  stepIndex = 0,
+  stepCount = 1,
+}) => {
   const hasClue = Boolean(clue);
   const cardClassName = hasClue
     ? `${styles.card} ${styles.cardWithClue}`
     : styles.card;
+  const showDots = stepCount > 1;
 
   const renderClue = () => {
     if (!clue) {
@@ -69,8 +75,20 @@ const QuestionCard = ({ question = "Which game costs more?", clue }) => {
 
   return (
     <div className={cardClassName}>
-      <div className={styles.question}>{question}</div>
       {renderClue()}
+      <div className={styles.question}>{question}</div>
+      {showDots ? (
+        <div className={styles.dots} aria-label="Question progress">
+          {Array.from({ length: stepCount }, (_, index) => (
+            <span
+              key={`dot-${index}`}
+              className={`${styles.dot} ${
+                index <= stepIndex ? styles.dotActive : ""
+              }`}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };

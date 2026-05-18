@@ -5,6 +5,7 @@ export const QUESTION_DEFS = [
     answerType: "source",
     clueType: "screenshot",
     revealFields: ["media"],
+    clueCount: 3,
   },
   {
     key: "price_compare",
@@ -51,6 +52,7 @@ export const QUESTION_DEFS = [
     answerType: "source",
     clueType: "review",
     revealFields: [],
+    clueCount: 3,
   },
   {
     key: "achievement_source",
@@ -58,6 +60,7 @@ export const QUESTION_DEFS = [
     answerType: "source",
     clueType: "achievement",
     revealFields: ["achievements"],
+    clueCount: 3,
   },
 ];
 
@@ -182,7 +185,7 @@ const compareGames = (pair, field) => {
   return null;
 };
 
-const buildClue = (definition, pair, roundIndex) => {
+const buildClue = (definition, pair, roundIndex, clueIndex) => {
   if (!definition || !pair) {
     return null;
   }
@@ -195,7 +198,8 @@ const buildClue = (definition, pair, roundIndex) => {
   }
 
   if (definition.clueType === "screenshot") {
-    const screenshot = sourceGame.screenshots?.[0] ?? null;
+    const screenshots = sourceGame.screenshots ?? [];
+    const screenshot = screenshots[clueIndex] ?? screenshots[0] ?? null;
 
     return {
       type: "screenshot",
@@ -215,29 +219,34 @@ const buildClue = (definition, pair, roundIndex) => {
   }
 
   if (definition.clueType === "review") {
+    const reviews = sourceGame.reviews ?? [];
+    const review = reviews[clueIndex] ?? reviews[0] ?? null;
     return {
       type: "review",
       side: sourceSide,
       game: sourceGame,
-      review: sourceGame.reviews?.[0] ?? null,
+      review,
     };
   }
 
   if (definition.clueType === "achievement") {
+    const achievements = sourceGame.achievements?.highlighted ?? [];
+    const achievement = achievements[clueIndex] ?? achievements[0] ?? null;
     return {
       type: "achievement",
       side: sourceSide,
       game: sourceGame,
-      achievement: sourceGame.achievements?.highlighted?.[0] ?? null,
+      achievement,
     };
   }
 
   return null;
 };
 
-export const getRoundModel = (pair, roundIndex) => {
+export const getRoundModel = (pair, roundIndex, clueIndex = 0) => {
   const definition = getQuestionDefinition(roundIndex);
-  const clue = buildClue(definition, pair, roundIndex);
+  const safeClueIndex = Math.max(0, clueIndex || 0);
+  const clue = buildClue(definition, pair, roundIndex, safeClueIndex);
   const correctSide =
     definition.answerType === "source"
       ? (clue?.side ?? null)
@@ -255,6 +264,7 @@ export const getRoundModel = (pair, roundIndex) => {
     correctSide,
     revealFields: definition.revealFields,
     sourceSide: clue?.side ?? null,
+    clueCount: definition.clueCount ?? 1,
   };
 };
 
