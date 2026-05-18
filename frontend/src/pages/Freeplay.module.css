@@ -1,0 +1,26 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px 20px;
+  color: var(--muted);
+}
+
+.content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  font-size: 2rem;
+  color: var(--ink);
+}
+
+.copy {
+  color: var(--muted);
+}
