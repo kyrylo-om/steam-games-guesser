@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import CenterSpine from "../components/CenterSpine";
-import SteamStorePanel from "../components/SteamStorePanel";
-import { useDailyChallenge } from "../hooks/useDailyChallenge";
-import styles from "./Play.module.css";
+import GamePanel from "./components/game-panel/game-panel";
+import SteamStorePanel from "./components/steam-store-panel/steam-store-panel";
+import { useDailyChallenge } from "../../hooks/use-daily-challenge";
+import styles from "./game.module.css";
 
-const Play = () => {
+const Game = () => {
   const { data, isLoading, isError } = useDailyChallenge();
   const [hoveredSide, setHoveredSide] = useState(null);
   const [selectedSide, setSelectedSide] = useState(null);
@@ -38,7 +38,7 @@ const Play = () => {
       </section>
 
       <section className={styles.center}>
-        <CenterSpine />
+        <GamePanel />
       </section>
 
       <section
@@ -55,4 +55,4 @@ const Play = () => {
   );
 };
 
-export default Play;
+export default Game;

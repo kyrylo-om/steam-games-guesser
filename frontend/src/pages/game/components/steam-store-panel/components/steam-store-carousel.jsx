@@ -1,6 +1,6 @@
 import Hls from "hls.js";
 import { useEffect, useMemo, useRef, useState } from "react";
-import styles from "./SteamStoreCarousel.module.css";
+import styles from "./steam-store-carousel.module.css";
 
 const SteamStoreCarousel = ({ game, headerImage }) => {
   const movieVideoRef = useRef(null);

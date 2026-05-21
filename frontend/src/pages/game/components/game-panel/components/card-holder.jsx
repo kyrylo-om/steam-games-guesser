@@ -1,5 +1,5 @@
-import QuestionCard from "./QuestionCard";
-import styles from "./CardHolder.module.css";
+import QuestionCard from "./question-card";
+import styles from "./card-holder.module.css";
 
 const CardHolder = () => {
   return (

@@ -1,6 +1,6 @@
-import styles from "./PowerUpPanel.module.css";
+import styles from "./power-up-container.module.css";
 
-const PowerUpPanel = () => {
+const PowerUpContainer = () => {
   return (
     <section className={styles.panel}>
       <p className={styles.title}>Power-ups</p>
@@ -9,4 +9,4 @@ const PowerUpPanel = () => {
   );
 };
 
-export default PowerUpPanel;
+export default PowerUpContainer;

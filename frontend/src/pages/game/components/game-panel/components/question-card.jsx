@@ -1,4 +1,4 @@
-import styles from "./QuestionCard.module.css";
+import styles from "./question-card.module.css";
 
 const QuestionCard = ({ question = "Which game costs more?" }) => {
   return (

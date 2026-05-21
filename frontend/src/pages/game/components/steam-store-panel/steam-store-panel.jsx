@@ -1,5 +1,5 @@
-import styles from "./SteamStorePanel.module.css";
-import SteamStoreCarousel from "./SteamStoreCarousel";
+import styles from "./steam-store-panel.module.css";
+import SteamStoreCarousel from "./components/steam-store-carousel";
 
 const SteamStorePanel = ({ game }) => {
   const name = game.name;
@@ -7,7 +7,7 @@ const SteamStorePanel = ({ game }) => {
   const headerImage = game.header_image;
   const formattedReviewCount = game.review_count.toLocaleString();
   const reviewScoreDesc = game.review_score_desc;
-  const achievementCount = game.achievements.total;
+  const achievementCount = game.achievements?.total;
   const achievementIcons = Array.isArray(game?.achievements?.highlighted)
     ? game.achievements.highlighted
     : [];
@@ -78,7 +78,7 @@ const SteamStorePanel = ({ game }) => {
         <div className={styles.achievementsContainer}>
           <div className={styles.achievementsTextContainer}>
             <span className={styles.achievementsText}>Achievements</span>
-            <span className={styles.achievementCountText}>{achievementCount}</span>
+            <span className={styles.achievementCountText}>{achievementCount ? achievementCount : "0"}</span>
           </div>
           <div className={styles.achievementIconsContainer}>
             {achievementIcons.map((achievement, index) => {

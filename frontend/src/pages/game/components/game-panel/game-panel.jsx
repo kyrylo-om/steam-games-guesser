@@ -1,9 +1,9 @@
-import AppHeader from "./AppHeader";
-import CardHolder from "./CardHolder";
-import PowerUpPanel from "./PowerUpPanel";
-import styles from "./CenterSpine.module.css";
+import AppHeader from "../../../../components/app-header";
+import CardHolder from "./components/card-holder";
+import PowerUpContainer from "./components/power-up-container";
+import styles from "./game-panel.module.css";
 
-const CenterSpine = () => {
+const GamePanel = () => {
   return (
     <aside className={styles.spine}>
       <AppHeader />
@@ -33,4 +33,4 @@ const CenterSpine = () => {
   );
 };
 
-export default CenterSpine;
+export default GamePanel;
