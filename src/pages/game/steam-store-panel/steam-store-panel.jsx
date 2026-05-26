@@ -1,5 +1,5 @@
 import styles from "./steam-store-panel.module.css";
-import SteamStoreCarousel from "./components/steam-store-carousel";
+import SteamStoreCarousel from "./steam-store-carousel";
 
 const SteamStorePanel = ({ game }) => {
   const name = game.name;

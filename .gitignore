@@ -1,36 +1,17 @@
-# Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/.env
-frontend/.env.local
+node_modules/
+dist/
+.env
+.env.local
 
-# Backend
-backend/venv/
-backend/.venv/
-backend/db.sqlite3
-backend/__pycache__/
-backend/*/migrations/__pycache__/
-backend/.env
-backend/.env.local
-*.pyc
-backend/*.pyo
-backend/.DS_Store
-
-# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
 .DS_Store
 Thumbs.db
 
-# Vite
 .vite/
 
-# General
 *.log
-.env.local
-

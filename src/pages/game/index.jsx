@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import GamePanel from "./components/game-panel/game-panel";
-import SteamStorePanel from "./components/steam-store-panel/steam-store-panel";
+import GamePanel from "./game-panel/game-panel";
+import SteamStorePanel from "./steam-store-panel/steam-store-panel";
 import { useDailyChallenge } from "../../hooks/use-daily-challenge";
 import styles from "./game.module.css";
 

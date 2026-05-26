@@ -1,6 +1,6 @@
-import AppHeader from "../../../../components/app-header";
-import CardHolder from "./components/card-holder";
-import PowerUpContainer from "./components/power-up-container";
+import AppHeader from "../../../components/app-header";
+import CardHolder from "./card-holder";
+import PowerUpContainer from "./power-up-container";
 import styles from "./game-panel.module.css";
 
 const GamePanel = () => {
