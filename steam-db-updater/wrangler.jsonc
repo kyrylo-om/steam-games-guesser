@@ -14,5 +14,12 @@
 	"upload_source_maps": true,
 	"compatibility_flags": [
 		"nodejs_compat"
-	]
+	],
+	"d1_databases": [
+    {
+      "binding": "steam_apps_db",
+      "database_name": "steam-apps-db",
+      "database_id": "2d8e83ec-4b46-4f04-a486-525fc43df151"
+    }
+  ]
 }
