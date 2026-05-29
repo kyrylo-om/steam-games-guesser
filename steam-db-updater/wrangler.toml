@@ -1,0 +1,16 @@
+name = "steam-db-updater"
+main = "src/index.js"
+compatibility_date = "2026-05-29"
+compatibility_flags = ["nodejs_compat"]
+upload_source_maps = true
+
+[observability]
+enabled = true
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[[d1_databases]]
+binding = "steam_apps_db"
+database_name = "steam-apps-db"
+database_id = "2d8e83ec-4b46-4f04-a486-525fc43df151"
