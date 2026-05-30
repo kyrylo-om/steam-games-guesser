@@ -8,9 +8,18 @@ upload_source_maps = true
 enabled = true
 
 [triggers]
-crons = ["*/5 * * * *"]
+crons = ["* * * * *"]
 
 [[d1_databases]]
 binding = "steam_apps_db"
 database_name = "steam-apps-db"
 database_id = "2d8e83ec-4b46-4f04-a486-525fc43df151"
+
+[vars]
+# === api rate limits ===
+BATCH_SIZE = 5   # one batch processed each minute
+REQUEST_DELAY = 1500   # delay between fetches of each game
+
+# === database restrictions ===
+REVIEWS_PER_GAME = 5
+ACHIEVEMENTS_PER_GAME = 5
