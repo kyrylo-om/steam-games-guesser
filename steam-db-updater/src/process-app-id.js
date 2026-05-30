@@ -2,6 +2,13 @@ const APP_DETAILS_URL = "https://store.steampowered.com/api/appdetails?l=english
 const APP_REVIEWS_URL = "https://store.steampowered.com/appreviews/";
 const REVIEWS_QUERY = "?json=1&purchase_type=all&language=english&filter=all&use_review_quality=0&filter_offtopic_activity=1&day_range=365";
 
+const NULL_CHAR_REGEX = /\u0000/g;
+const SCREENSHOT_TOKEN_REGEX = /^(?:[^\/]*\/){7}([^.]+)/;
+const MOVIE_THUMB_REGEX = /^(?:[^\/]*\/){6}(.*?)\.jpg/;
+const MOVIE_DASH_REGEX = /^(?:[^\/]*\/){5}(.*?)\/dash_/;
+const ESCAPE_REGEX = /[.*+?^${}()|[\]\\]/g;
+const APOSTROPHE_REGEX = /['\u2018\u2019]/g;
+
 const gameColumns = [
   "app_id",
   "name",
@@ -53,7 +60,7 @@ const ensureArray = (value) => (Array.isArray(value) ? value : []);
 
 const sanitizeString = (value) => {
   if (value === null || value === undefined) return null;
-  return String(value).replace(/\u0000/g, "");
+  return String(value).replace(NULL_CHAR_REGEX, "");
 };
 
 const safeString = (value, fallback = "") =>
@@ -118,7 +125,7 @@ const buildPlatformsField = (platforms) => {
 const toScreenshotToken = (screenshot) => {
   const candidate =
     screenshot?.path_full || screenshot?.path_thumbnail || "";
-  const match = String(candidate).match(/^(?:[^\/]*\/){7}([^\.]+)/);
+  const match = String(candidate).match(SCREENSHOT_TOKEN_REGEX);
   return match?.[1] || null;
 };
 
@@ -131,10 +138,10 @@ const buildScreenshotsField = (screenshots) => {
 
 const toMovieToken = (movie) => {
   const thumbnailCandidate = movie?.thumbnail || "";
-  const thumbnailMatch = String(thumbnailCandidate).match(/^(?:[^\/]*\/){6}(.*?)\.jpg/);
+  const thumbnailMatch = String(thumbnailCandidate).match(MOVIE_THUMB_REGEX);
 
   const movieCandidate = movie?.dash_av1 || movie?.dash_h264 || "";
-  const movieMatch = String(movieCandidate).match(/^(?:[^\/]*\/){5}(.*?)\/dash_/);
+  const movieMatch = String(movieCandidate).match(MOVIE_DASH_REGEX);
 
   const tokens = [];
   if (thumbnailMatch?.[1]) tokens.push(thumbnailMatch[1]);
@@ -219,8 +226,8 @@ const buildGameRow = (appId, appData, reviewsPayload) => {
   ];
 };
 
-const buildInsertStatement = (table, columns, rows) => {
-  if (!rows.length) return 0;
+const buildInsertStatement = (table, columns, rowsJson) => {
+  if (!rowsJson) return null;
 
   const selectColumns = columns
     .map((_, index) => `json_extract(value, '$[${index}]')`)
@@ -230,7 +237,7 @@ const buildInsertStatement = (table, columns, rows) => {
     query:
       `INSERT INTO ${table} (${columns.join(", ")}) ` +
       `SELECT ${selectColumns} FROM json_each(?)`,
-    params: [JSON.stringify(rows)],
+    params: [rowsJson],
   };
 };
 
@@ -280,16 +287,15 @@ const buildAchievementRows = (appId, appData, limit) => {
 
 const replaceGameName = (text, gameName) => {
   if (!text || !gameName) return text;
-  const escapedName = String(gameName).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const flexibleName = escapedName.replace(/['\u2018\u2019]/g, "['\\u2018\\u2019]");
+  const escapedName = String(gameName).replace(ESCAPE_REGEX, "\\$&");
+  const flexibleName = escapedName.replace(APOSTROPHE_REGEX, "['\\u2018\\u2019]");
   const pattern = new RegExp(flexibleName, "gi");
   return text.replace(pattern, "[this game]");
 };
 
-const buildReviewRows = (appId, reviewsPayload, limit, gameName) => {
+const buildReviewRows = (appId, reviewsPayload, gameName) => {
   const reviews = ensureArray(reviewsPayload?.reviews)
-    .filter(Boolean)
-    .slice(0, limit);
+    .filter(Boolean);
 
   return reviews.map((review) => {
     const author = review?.author;
@@ -329,16 +335,26 @@ export const processAppId = async (db, appId, options = {}) => {
     return { appId, status: "skipped" };
   }
 
-  const reviewsPayload = await fetchJson(`${APP_REVIEWS_URL}${appId}${REVIEWS_QUERY}`);
+  const reviewsPayload = await fetchJson(`${APP_REVIEWS_URL}${appId}${REVIEWS_QUERY}&num_per_page=${options.reviewsPerGame}`);
 
   const gameRow = buildGameRow(appId, appDetails, reviewsPayload);
-  const achievementRows = buildAchievementRows(appId, appDetails, Number(options.achievementsPerGame));
+  const achievementRows = buildAchievementRows(
+    appId,
+    appDetails,
+    Number(options.achievementsPerGame),
+  );
   const reviewRows = buildReviewRows(
     appId,
     reviewsPayload,
-    Number(options.reviewsPerGame),
     appDetails?.name,
   );
+
+  const achievementRowsJson = achievementRows.length
+    ? JSON.stringify(achievementRows)
+    : null;
+  const reviewRowsJson = reviewRows.length
+    ? JSON.stringify(reviewRows)
+    : null;
 
   const batchStatements = [];
 
@@ -346,30 +362,28 @@ export const processAppId = async (db, appId, options = {}) => {
   batchStatements.push(
     db.prepare(gameStatement.query).bind(...gameStatement.params),
   );
-  batchStatements.push(
-    db.prepare("DELETE FROM achievements WHERE app_id = ?").bind(appId),
-  );
-
-  if (achievementRows.length) {
+  if (achievementRowsJson) {
+    batchStatements.push(
+      db.prepare("DELETE FROM achievements WHERE app_id = ?").bind(appId),
+    );
     const insertAchievements = buildInsertStatement(
       "achievements",
       achievementColumns,
-      achievementRows,
+      achievementRowsJson,
     );
     batchStatements.push(
       db.prepare(insertAchievements.query).bind(...insertAchievements.params),
     );
   }
 
-  batchStatements.push(
-    db.prepare("DELETE FROM reviews WHERE app_id = ?").bind(appId),
-  );
-
-  if (reviewRows.length) {
+  if (reviewRowsJson) {
+    batchStatements.push(
+      db.prepare("DELETE FROM reviews WHERE app_id = ?").bind(appId),
+    );
     const insertReviews = buildInsertStatement(
       "reviews",
       reviewColumns,
-      reviewRows,
+      reviewRowsJson,
     );
     batchStatements.push(
       db.prepare(insertReviews.query).bind(...insertReviews.params),
