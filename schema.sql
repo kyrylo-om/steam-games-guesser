@@ -1,8 +1,8 @@
-CREATE TABLE pending_ids (
+CREATE TABLE IF NOT EXISTS pending_ids (
     app_id INTEGER PRIMARY KEY
 );
 
-CREATE TABLE games (
+CREATE TABLE IF NOT EXISTS games (
     app_id INTEGER PRIMARY KEY,
 
     name TEXT NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE games (
     pc_requirements TEXT
 );
 
-CREATE TABLE achievements (
+CREATE TABLE IF NOT EXISTS achievements (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     app_id INTEGER NOT NULL,
     name TEXT,
@@ -43,7 +43,7 @@ CREATE TABLE achievements (
     FOREIGN KEY (app_id) REFERENCES games(app_id) ON DELETE CASCADE
 );
 
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     app_id INTEGER NOT NULL,
     author_name TEXT NOT NULL,
@@ -59,3 +59,7 @@ CREATE TABLE reviews (
 
     FOREIGN KEY (app_id) REFERENCES games(app_id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_achievements_app_id ON achievements(app_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_app_id ON reviews(app_id);
+CREATE INDEX IF NOT EXISTS idx_pending_ids_app_id ON pending_ids(app_id);
