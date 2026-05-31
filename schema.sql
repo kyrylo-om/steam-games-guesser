@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     author_icon TEXT,
     author_games_owned INTEGER,
     author_num_reviews INTEGER,
-    playtime INTEGER,
+    playtime INTEGER NOT NULL,
 
     review TEXT NOT NULL,
     recommended INTEGER NOT NULL,
@@ -59,6 +59,15 @@ CREATE TABLE IF NOT EXISTS reviews (
 
     FOREIGN KEY (app_id) REFERENCES games(app_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS daily_matches (
+    date TEXT PRIMARY KEY,
+    
+    game1_id INTEGER NOT NULL,
+    game2_id INTEGER NOT NULL,
+
+    questions TEXT NOT NULL
+)
 
 CREATE INDEX IF NOT EXISTS idx_achievements_app_id ON achievements(app_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_app_id ON reviews(app_id);
