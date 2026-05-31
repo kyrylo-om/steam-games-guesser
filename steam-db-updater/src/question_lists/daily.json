@@ -1,0 +1,50 @@
+[
+    {
+        "question": "Which game is this screenshot from?",
+        "type": "screenshots",
+        "reveal_field": "media"
+    },
+    {
+        "question": "Which game costs more?",
+        "type": "compare",
+        "criteria": "price",
+        "higher": 1,
+        "reveal_field": "price"
+    },
+    {
+        "question": "Which game was created by...",
+        "type": "devlishers",
+        "reveal_field": "devlishers"
+    },
+    {
+        "question": "Which game is newer?",
+        "type": "compare",
+        "criteria": "date",
+        "higher": 1,
+        "reveal_field": "release"
+    },
+    {
+        "question": "Which game is this achievement from?",
+        "type": "achievements",
+        "reveal_field": "achievements"
+    },
+    {
+        "question": "Which game has more English reviews?",
+        "type": "compare",
+        "criteria": "review_count",
+        "higher": 1,
+        "reveal_field": "review_count"
+    },
+    {
+        "question": "Which game has a higher review score?",
+        "type": "compare",
+        "criteria": "review_score",
+        "higher": 1,
+        "reveal_field": "review_score"
+    },
+    {
+        "question": "Which game is this review from?",
+        "type": "reviews",
+        "reveal_field": ""
+    }
+]
