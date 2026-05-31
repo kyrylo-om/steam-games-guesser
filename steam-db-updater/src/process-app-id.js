@@ -317,6 +317,11 @@ const buildReviewRows = (appId, reviewsPayload, gameName) => {
 // ###########
 
 export const processAppId = async (db, appId, options = {}) => {
+  const gameExists = Boolean(await db
+    .prepare("SELECT 1 FROM games WHERE app_id = ?")
+    .bind(appId)
+    .first());
+
   const payload = await fetchJson(`${APP_DETAILS_URL}${appId}`);
 
   const appData = payload?.[String(appId)];
@@ -333,21 +338,25 @@ export const processAppId = async (db, appId, options = {}) => {
   const reviewsPayload = await fetchJson(`${APP_REVIEWS_URL}${appId}${REVIEWS_QUERY}&num_per_page=${options.reviewsPerGame}`);
 
   const gameRow = buildGameRow(appId, appDetails, reviewsPayload);
-  const achievementRows = buildAchievementRows(
-    appId,
-    appDetails,
-    Number(options.achievementsPerGame),
-  );
-  const reviewRows = buildReviewRows(
-    appId,
-    reviewsPayload,
-    appDetails?.name,
-  );
+  const achievementRows = gameExists
+    ? []
+    : buildAchievementRows(
+      appId,
+      appDetails,
+      Number(options.achievementsPerGame),
+    );
+  const reviewRows = gameExists
+    ? []
+    : buildReviewRows(
+      appId,
+      reviewsPayload,
+      appDetails?.name,
+    );
 
-  const achievementRowsJson = achievementRows.length
+  const achievementRowsJson = !gameExists && achievementRows.length
     ? JSON.stringify(achievementRows)
     : null;
-  const reviewRowsJson = reviewRows.length
+  const reviewRowsJson = !gameExists && reviewRows.length
     ? JSON.stringify(reviewRows)
     : null;
 
@@ -358,9 +367,6 @@ export const processAppId = async (db, appId, options = {}) => {
     db.prepare(gameStatement.query).bind(...gameStatement.params),
   );
   if (achievementRowsJson) {
-    batchStatements.push(
-      db.prepare("DELETE FROM achievements WHERE app_id = ?").bind(appId),
-    );
     const insertAchievements = buildInsertStatement(
       "achievements",
       achievementColumns,
@@ -372,9 +378,6 @@ export const processAppId = async (db, appId, options = {}) => {
   }
 
   if (reviewRowsJson) {
-    batchStatements.push(
-      db.prepare("DELETE FROM reviews WHERE app_id = ?").bind(appId),
-    );
     const insertReviews = buildInsertStatement(
       "reviews",
       reviewColumns,
