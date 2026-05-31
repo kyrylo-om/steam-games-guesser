@@ -198,7 +198,7 @@ const buildGameRow = (appId, appData, reviewsPayload) => {
   const publishersField = buildDevelopersField(appData?.publishers);
   const genresField = buildGenresField(appData?.genres);
   const platformsField = buildPlatformsField(appData?.platforms);
-  const contentDescriptors = safeString(appData.content_descriptors.notes, null);
+  const contentDescriptors = safeString(appData?.content_descriptors?.notes, null);
   const pcRequirementsJson = safeString(appData?.pc_requirements?.minimum, null);
 
   return [
@@ -258,16 +258,8 @@ const upsertGameStatement = (row) => {
 // Query build for achievements table
 // ##################################
 
-const selectAchievements = (achievements, limit) => {
-  if (!Number.isFinite(limit) || limit <= 0) return achievements;
-  return achievements.slice(0, limit);
-};
-
 const buildAchievementRows = (appId, appData, limit) => {
-  const highlighted = selectAchievements(
-    ensureArray(appData?.achievements?.highlighted),
-    limit,
-  );
+  const highlighted = ensureArray(appData?.achievements?.highlighted).slice(0, limit);
   return highlighted
     .map((achievement) => {
       const name =
@@ -301,21 +293,21 @@ const buildReviewRows = (appId, reviewsPayload, gameName) => {
     const author = review?.author;
     const authorIcon = sanitizeString(author?.avatar);
     const reviewText = replaceGameName(
-      sanitizeString(review?.review),
+      safeString(review?.review),
       gameName,
     );
 
     return [
       appId,
-      sanitizeString(author?.personaname),
-      toInteger(author?.steamid),
+      safeString(author?.personaname),
+      toInteger(author?.steamid, 0),
       authorIcon,
       toInteger(author?.num_games_owned),
       toInteger(author?.num_reviews),
       toInteger(author?.playtime_at_review),
       reviewText,
       review?.voted_up ? 1 : 0,
-      toInteger(review?.votes_up),
+      toInteger(review?.votes_up, 0),
     ];
   });
 };
