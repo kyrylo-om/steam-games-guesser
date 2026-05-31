@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS achievements (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     app_id INTEGER NOT NULL,
     name TEXT,
-    icon TEXT NOT NULL,
+    icon TEXT,
 
     FOREIGN KEY (app_id) REFERENCES games(app_id) ON DELETE CASCADE
 );
@@ -49,9 +49,9 @@ CREATE TABLE IF NOT EXISTS reviews (
     author_name TEXT NOT NULL,
     author_id INTEGER NOT NULL,
     author_icon TEXT,
-    author_games_owned,
-    author_num_reviews,
-    playtime INTEGER NOT NULL,
+    author_games_owned INTEGER,
+    author_num_reviews INTEGER,
+    playtime INTEGER,
 
     review TEXT NOT NULL,
     recommended INTEGER NOT NULL,
