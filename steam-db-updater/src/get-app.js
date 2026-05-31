@@ -26,6 +26,7 @@ export const prepareGame = (game) => {
 		: null;
 
 	return {
+        id: appId,
 		...rest,
 		thumbnail: `${baseUrl}${appId}/header.jpg`,
 		background: `https://store.akamai.steamstatic.com/images/storepagebackground/app/${appId}`,
