@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS daily_matches (
     game2_id INTEGER NOT NULL,
 
     questions TEXT NOT NULL
-)
+);
 
 CREATE INDEX IF NOT EXISTS idx_achievements_app_id ON achievements(app_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_app_id ON reviews(app_id);
