@@ -1,7 +1,23 @@
 import { fetchTopGames } from "./fetch-top-games.js";
+import { getAppInfo } from "./get-app.js";
+import { addDailyMatch } from "./add-daily-match.js";
 import { processAppId } from "./process-app-id.js";
+import { getMatch } from "./get-match.js";
+import { getDailyMatch } from "./get-daily-match.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const jsonResponse = (obj, status = 200) =>
+	new Response(JSON.stringify(obj), {
+		status,
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+
+const okResponse = (payload = {}) => jsonResponse({ ok: true, ...payload }, 200);
+const errorResponse = (message = "Unknown error.", status = 500) =>
+	jsonResponse({ ok: false, error: message }, status);
 
 const processPendingIds = async (db, env) => {
 	if (!db) {
@@ -77,54 +93,95 @@ const processPendingIds = async (db, env) => {
 export default {
 	async fetch(req, env) {
 		const url = new URL(req.url);
-		if (url.pathname !== "/fetch-top-games") {
-			return new Response(JSON.stringify({
-				ok: false,
-				error: "Not found.",
-			}), {
-				status: 404,
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
+		if (url.pathname === "/fetch-top-games") {
+			const limit = url.searchParams.get("limit");
+
+			try {
+				const result = await fetchTopGames({ db: env.steam_apps_db, limit });
+				return okResponse(result);
+			} catch (error) {
+				return errorResponse(error?.message || "Unknown error.", 500);
+			}
 		}
 
-		const limit = url.searchParams.get("limit");
+		if (url.pathname === "/get-app") {
+			const idParam = url.searchParams.get("id");
+			const appId = Number(idParam);
 
-		try {
-			const result = await fetchTopGames({
-				db: env.steam_apps_db,
-				limit,
-			});
+			if (!idParam || !Number.isInteger(appId)) {
+				return errorResponse("Missing or invalid id.", 400);
+			}
 
-			return new Response(JSON.stringify({
-				ok: true,
-				...result,
-			}), {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-		} catch (error) {
-			return new Response(JSON.stringify({
-				ok: false,
-				error: error?.message || "Unknown error.",
-			}), {
-				status: 500,
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
+			try {
+				const result = await getAppInfo(env.steam_apps_db, appId);
+				if (!result) return errorResponse("Not found.", 404);
+				return okResponse(result);
+			} catch (error) {
+				return errorResponse(error?.message || "Unknown error.", 500);
+			}
 		}
+
+		if (url.pathname === "/get-match") {
+			try {
+				const result = await getMatch(env.steam_apps_db);
+				if (!result) return errorResponse("Not found.", 404);
+				return okResponse(result);
+			} catch (error) {
+				return errorResponse(error?.message || "Unknown error.", 500);
+			}
+		}
+
+		if (url.pathname === "/get-daily-match") {
+			const dateParam = url.searchParams.get("date");
+			let dateArg;
+			if (dateParam) {
+				const parsed = new Date(dateParam);
+				if (isNaN(parsed.getTime())) {
+					return errorResponse("Invalid date.", 400);
+				}
+				dateArg = parsed;
+			} else {
+				dateArg = undefined;
+			}
+
+			try {
+				const result = await getDailyMatch(env.steam_apps_db, dateArg);
+				if (!result) return errorResponse("Not found.", 404);
+				return okResponse(result);
+			} catch (error) {
+				return errorResponse(error?.message || "Unknown error.", 500);
+			}
+		}
+
+		return new Response(JSON.stringify({
+			ok: false,
+			error: "Not found.",
+		}), {
+			status: 404,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
 	},
 
 	// The scheduled handler is invoked at the interval set in the triggers config.
 	async scheduled(event, env, ctx) {
-		try {
-			const result = await processPendingIds(env.steam_apps_db, env);
-			console.log(`Processed ${result.inserted} app(s), skipped ${result.skipped}, failed ${result.failed}.`);
-		} catch (error) {
-			console.error("Scheduled run failed:", error?.stack || error);
+		if (event.cron === "0 0 * * *") {
+			try {
+				const scheduledDate = new Date(event.scheduledTime);
+				await addDailyMatch(env.steam_apps_db, scheduledDate);
+			} catch (error) {
+				console.error("Daily match failed:", error?.stack || error);
+			}
+		}
+
+		if (event.cron === "* * * * *") {
+			try {
+				const result = await processPendingIds(env.steam_apps_db, env);
+				console.log(`Processed ${result.inserted} app(s), skipped ${result.skipped}, failed ${result.failed}.`);
+			} catch (error) {
+				console.error("Scheduled run failed:", error?.stack || error);
+			}
 		}
 	},
 };
