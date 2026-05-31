@@ -336,6 +336,12 @@ export const processAppId = async (db, appId, options = {}) => {
   }
 
   const reviewsPayload = await fetchJson(`${APP_REVIEWS_URL}${appId}${REVIEWS_QUERY}&num_per_page=${options.reviewsPerGame}`);
+  
+  const totalReviews = reviewsPayload?.query_summary?.total_reviews;
+
+  if (!totalReviews || totalReviews < options.reviewsPerGame) {
+    return { appId, status: "skipped" };
+  }
 
   const gameRow = buildGameRow(appId, appDetails, reviewsPayload);
   const achievementRows = gameExists
