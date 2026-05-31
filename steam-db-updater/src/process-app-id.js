@@ -304,7 +304,7 @@ const buildReviewRows = (appId, reviewsPayload, gameName) => {
       authorIcon,
       toInteger(author?.num_games_owned),
       toInteger(author?.num_reviews),
-      toInteger(author?.playtime_at_review),
+      toInteger(author?.playtime_at_review ?? author?.playtime_forever, 0),
       reviewText,
       review?.voted_up ? 1 : 0,
       toInteger(review?.votes_up, 0),
@@ -324,6 +324,9 @@ export const processAppId = async (db, appId, options = {}) => {
 
   const appDetails = appData.data;
   if (appDetails?.type && appDetails.type !== "game") {
+    return { appId, status: "skipped" };
+  }
+  if (appDetails?.release_date?.coming_soon) {
     return { appId, status: "skipped" };
   }
 
