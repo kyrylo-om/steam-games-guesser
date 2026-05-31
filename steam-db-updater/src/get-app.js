@@ -14,18 +14,20 @@ export const prepareGame = (game) => {
 		.split(",")
 		.map((token) => `${baseUrl}${appId}/${token}.1920x1080.jpg`);
 	const videoList = videos
-		.split(",")
-		.map((item) => {
-			const [thumbnailToken, videoToken] = item.split("|");
-			return {
-				thumbnail: `${baseUrl}${thumbnailToken}.jpg`,
-				video: `https://video.akamai.steamstatic.com/store_trailers/${appId}/${videoToken}/hls_264_master.m3u8`,
-			};
-		});
+		? videos
+				.split(",")
+				.map((item) => {
+					const [thumbnailToken, videoToken] = item.split("|");
+					return {
+						thumbnail: `${baseUrl}${thumbnailToken}.jpg`,
+						video: `https://video.akamai.steamstatic.com/store_trailers/${appId}/${videoToken}/hls_264_master.m3u8`,
+					};
+				})
+		: null;
 
 	return {
 		...rest,
-		thumbnail: `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appId}/header.jpg`,
+		thumbnail: `${baseUrl}${appId}/header.jpg`,
 		background: `https://store.akamai.steamstatic.com/images/storepagebackground/app/${appId}`,
 		developers: developers.split(","),
 		genres: genres.split(","),
