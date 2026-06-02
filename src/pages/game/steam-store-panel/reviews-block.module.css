@@ -1,0 +1,29 @@
+.reviews-block {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.reviews {
+  color: #798a95;
+}
+
+.review-score-desc {
+  margin-left: 4px;
+}
+
+.review-sentiment,
+.review-count {
+  color: inherit;
+}
+
+.review-positive {
+  color: #67c1f5;
+}
+
+.review-mixed {
+  color: #f0ad4e;
+}
+
+.review-negative {
+  color: #c85e2d;
+}

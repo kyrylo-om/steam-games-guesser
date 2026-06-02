@@ -9,162 +9,21 @@
   font-size: 0.9rem;
 }
 
-.thumbnail-wrapper {
-  width: 100%;
-  height: max-content;
-  overflow: hidden;
-}
-
-.thumbnail {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  object-fit: cover;
-  height: auto;
-}
-
 .content {
   padding: 8px;
 }
 
+.main-info {
+  margin: 1rem 0;
+}
+
 .game-name {
+  font-size: 1.7rem;
   font-weight: 400;
   color: white;
 }
 
-.info {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-}
-
-.info-keys {
-  color: #798a95;
-}
-
-.developers,
-.publishers {
-  color: #67c1f5;
-}
-
 .description {
-  margin-top: 16px;
-  font-size: 0.9rem;
-}
-
-.reviews {
-  color: #798a95;
-  margin-top: 16px;
-}
-
-.review-positive {
-  color: #67c1f5;
-}
-
-.review-mixed {
-  color: #f0ad4e;
-}
-
-.review-negative {
-  color: #c85e2d;
-}
-
-.purchase-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
   width: 100%;
-  background-image: linear-gradient(
-    -60deg,
-    rgba(226, 244, 255, 0.3) 5%,
-    rgba(84, 107, 115, 0.3) 95%
-  );
-  padding: 10px 16px;
-  margin-top: 16px;
-  border-radius: 2px;
-}
-
-.purchase-text {
-  font-size: 1.4rem;
-}
-
-.price-container {
-  display: flex;
-  flex-direction: row;
-  gap: 2px;
-  background-color: black;
-  width: fit-content;
-  justify-content: center;
-  align-items: center;
-  border: 4px black;
-  box-sizing: border-box;
-  border-radius: 2px;
-}
-
-.price-button {
-  background-image: linear-gradient(
-    to right,
-    rgb(117, 176, 34) 5%,
-    rgb(88, 138, 27) 95%
-  );
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
-  padding: 4px 16px;
-  border-radius: 2px;
-  margin-left: 4px;
-}
-
-.price {
-  padding: 8px;
-}
-
-.carousel-wrapper {
-  margin-top: 8px;
-}
-
-.achievements-text {
-  font-size: 1rem;
-}
-
-.achievement-count-text {
-  font-size: 1.7rem;
-  font-weight: 700;
-  line-height: 1.7rem;
-}
-
-.achievements-container {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  background-image: linear-gradient(
-    -60deg,
-    rgba(57, 92, 113, 0.3) 5%,
-    rgba(88, 145, 164, 0.3) 95%
-  );
-  padding: 10px 16px;
-  margin-top: 16px;
-  border-radius: 2px;
-}
-
-.achievements-text-container {
-    display: flex;
-    flex-direction: column;
-}
-
-.achievement-icons-container {
-  display: flex;
-  flex-direction: row;
-  gap: 6px;
-  align-items: center;
-  overflow: auto;
-  margin-left: 1.5rem;
-  
-}
-
-.achievement-icon {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 4px;
-  background: #0f1d27;
-  object-fit: cover;
+  margin-top: 0.5rem;
 }

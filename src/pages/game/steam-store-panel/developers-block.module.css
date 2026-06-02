@@ -1,0 +1,29 @@
+.developers-block {
+  width: 100%;
+  margin-top: 8px;
+  height: 5rem;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.label {
+  color: #798a95;
+  min-width: 92px;
+}
+
+.value {
+  color: #67c1f5;
+  text-align: right;
+  flex: 1;
+}
