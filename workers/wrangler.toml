@@ -22,4 +22,4 @@ REQUEST_DELAY = 1500   # delay between fetches of each game
 
 # === database restrictions ===
 REVIEWS_PER_GAME = 5
-ACHIEVEMENTS_PER_GAME = 5
+ACHIEVEMENTS_PER_GAME = 10
