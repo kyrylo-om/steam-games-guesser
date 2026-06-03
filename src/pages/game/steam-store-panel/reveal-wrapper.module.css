@@ -10,6 +10,7 @@
   transition: opacity 220ms ease;
   display: flex;
   align-items: stretch;
+  min-width: 0;
 }
 
 .reveal-layer[data-layer="content"] {
