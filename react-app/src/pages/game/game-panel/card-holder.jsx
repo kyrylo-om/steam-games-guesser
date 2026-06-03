@@ -10,19 +10,21 @@ const CardHolder = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPic
 
   return (
     <section className={styles.panel}>
-      {hasSubquestions ? (
-        <ExtendedQuestionCard
-          question={question.question}
-          data={question.data}
-          correct={question.correct}
-          type={question.type}
-          leftGame={leftGame}
-          rightGame={rightGame}
-          subIndex={subIndex}
-        />
-      ) : (
-        <QuestionCard question={question?.question} />
-      )}
+      <div className={styles.content}>
+        {hasSubquestions ? (
+          <ExtendedQuestionCard
+            question={question.question}
+            data={question.data}
+            correct={question.correct}
+            type={question.type}
+            leftGame={leftGame}
+            rightGame={rightGame}
+            subIndex={subIndex}
+          />
+        ) : (
+          <QuestionCard question={question?.question} />
+        )}
+      </div>
 
       <button
         className={styles.overlayLeft}

@@ -1,6 +1,5 @@
 import AppHeader from "../../../components/app-header";
 import CardHolder from "./card-holder";
-import PickButtons from "./pick-buttons";
 import PowerUpContainer from "./power-up-container";
 import styles from "./game-panel.module.css";
 
@@ -29,10 +28,11 @@ const GamePanel = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPick
           </div>
         </section>
       </section>
-      <CardHolder question={question} leftGame={leftGame} rightGame={rightGame} subIndex={subIndex} />
-      <PickButtons
-        leftName={leftGame?.game?.name ?? "Game A"}
-        rightName={rightGame?.game?.name ?? "Game B"}
+      <CardHolder
+        question={question}
+        leftGame={leftGame}
+        rightGame={rightGame}
+        subIndex={subIndex}
         onPickLeft={onPickLeft}
         onPickRight={onPickRight}
         disabled={disabled}
