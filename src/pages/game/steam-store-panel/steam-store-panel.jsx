@@ -7,41 +7,39 @@ import ReviewsBlock from "./reviews-block";
 import ScreenshotsBlock from "./screenshots-block";
 import ThumbnailBlock from "./thumbnail-block";
 
-const SteamStorePanel = ({ game }) => {
-  const name = game.name;
-  const headerImage = game.header_image;
-  const description = game.short_description;
-  const reviewScoreDesc = game.review_score_desc;
+const SteamStorePanel = ({ gamePayload }) => {
+  const game = gamePayload.game;
+  const reviewScoreDesc = "yes";
 
   return (
     <section className={styles.panel}>
 
       <div className={styles.content}>
-        <ThumbnailBlock title={name} imageSrc={headerImage} />
+        <ThumbnailBlock title={game.name} imageSrc={game.thumbnail} />
 
         <div className={styles.mainInfo}>
-          <h1 className={styles.gameName}>{name}</h1>
-          <p className={styles.description}>{description}</p>
+          <h1 className={styles.gameName}>{game.name}</h1>
+          <p className={styles.description}>{game.description}</p>
         </div>
 
         <DevelopersBlock
           developers={game.developers}
           publishers={game.publishers}
         />
-        <ReleaseDateBlock releaseDate={game.release_date} />
+        <ReleaseDateBlock releaseDate={game.release_timestamp} />
         <ReviewsBlock
           reviewScoreDesc={reviewScoreDesc}
-          reviewSentiment={game.review_sentiment}
-          reviewCount={game.review_count}
+          reviewSentiment={game.num_reviews / 100 * game.num_positive_reviews}
+          reviewCount={game.num_reviews}
         />
-        <ScreenshotsBlock game={game} headerImage={headerImage} />
+        <ScreenshotsBlock game={game} />
 
-        <PriceBlock gameName={name} price={game.price} />
+        <PriceBlock gameName={game.name} price={game.price} />
 
         <AchievementsBlock
-          achievementCount={game.achievements?.total}
-          achievementIcons={game.achievements?.highlighted}
-          gameName={name}
+          achievementCount={game.num_achievements}
+          achievementIcons={gamePayload.achievements}
+          gameName={game.name}
         />
       </div>
     </section>

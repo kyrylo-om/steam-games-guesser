@@ -1,24 +1,55 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import GamePanel from "./game-panel/game-panel";
 import SteamStorePanel from "./steam-store-panel/steam-store-panel";
-import { useDailyChallenge } from "../../hooks/use-daily-challenge";
 import styles from "./game.module.css";
 
 const Game = () => {
-  const { data, isLoading, isError } = useDailyChallenge();
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const [hoveredSide, setHoveredSide] = useState(null);
   const [selectedSide, setSelectedSide] = useState(null);
 
-  const pair = useMemo(() => data?.pairs?.[0] ?? null, [data]);
-  const leftGame = pair?.game1 ?? null;
-  const rightGame = pair?.game2 ?? null;
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchMatch = async () => {
+      try {
+        setIsLoading(true);
+        setIsError(false);
+        const response = await fetch(
+          "https://steam-db-updater.kyrylo-omelianchuk.workers.dev/get-match",
+          { signal: controller.signal },
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to load match: ${response.status}`);
+        }
+
+        const payload = await response.json();
+        setData(payload);
+      } catch (error) {
+        if (error.name === "AbortError") return;
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMatch();
+
+    return () => controller.abort();
+  }, []);
+
+  const leftGame = useMemo(() => data?.games?.[0] ?? null, [data]);
+  const rightGame = useMemo(() => data?.games?.[1] ?? null, [data]);
 
 
   if (isLoading) {
     return <main className={styles.state}>Loading daily challenge...</main>;
   }
 
-  if (isError || !pair) {
+  if (isError || !leftGame || !rightGame) {
     return (
       <main className={styles.state}>Unable to load daily challenge.</main>
     );
@@ -34,7 +65,7 @@ const Game = () => {
         onMouseLeave={() => setHoveredSide(null)}
         onClick={() => setSelectedSide("left")}
       >
-        <SteamStorePanel game={leftGame} />
+        <SteamStorePanel gamePayload={leftGame} />
       </section>
 
       <section className={styles.center}>
@@ -49,7 +80,7 @@ const Game = () => {
         onMouseLeave={() => setHoveredSide(null)}
         onClick={() => setSelectedSide("right")}
       >
-        <SteamStorePanel game={rightGame} />
+        <SteamStorePanel gamePayload={rightGame} />
       </section>
     </main>
   );
