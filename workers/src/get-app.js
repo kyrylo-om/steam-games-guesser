@@ -68,7 +68,7 @@ export const prepareGame = (game) => {
 export const prepareAchievements = (achievements, app_id) =>
 	achievements.map((achievement) => ({
 		name: achievement.name,
-		icon: `cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/${app_id}/${achievement.icon}`,
+		icon: `https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/${app_id}/${achievement.icon}`,
 	}));
 
 export const prepareReviews = (reviews) =>
