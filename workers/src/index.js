@@ -12,6 +12,9 @@ const jsonResponse = (obj, status = 200) =>
 		status,
 		headers: {
 			"Content-Type": "application/json",
+			"Access-Control-Allow-Origin": "https://steam-guesser.pages.dev",
+			"Access-Control-Allow-Methods": "GET, OPTIONS",
+			"Access-Control-Allow-Headers": "Content-Type",
 		},
 	});
 
@@ -153,15 +156,7 @@ export default {
 			}
 		}
 
-		return new Response(JSON.stringify({
-			ok: false,
-			error: "Not found.",
-		}), {
-			status: 404,
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
+		return errorResponse("Unknown endpoint.", 404);
 	},
 
 	// The scheduled handler is invoked at the interval set in the triggers config.
