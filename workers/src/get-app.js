@@ -60,6 +60,8 @@ export const prepareGame = (game) => {
 		publishers: publishers.split(","),
 		screenshots: screenshotList,
 		videos: videoList,
+		num_reviews: num_reviews,
+		num_positive_reviews: num_positive_reviews,
 		review_score: reviewScore,
 		review_sentiment: reviewSentiment,
 	};
