@@ -2,7 +2,6 @@
   display: grid;
   grid-template-columns: minmax(0, 43rem) minmax(160px, 1fr) minmax(0, 43rem);
   min-height: 100vh;
-  background: #121f2a;
 }
 
 .side {
