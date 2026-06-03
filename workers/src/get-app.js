@@ -7,6 +7,8 @@ export const prepareGame = (game) => {
 		genres,
 		platforms,
 		publishers,
+		num_reviews,
+		num_positive_reviews,
 		...rest
 	} = game;
 	const baseUrl = `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/`;
@@ -25,8 +27,30 @@ export const prepareGame = (game) => {
 				})
 		: null;
 
+	const reviewScore =
+		num_reviews > 0
+			? Math.round((num_positive_reviews / num_reviews) * 100)
+			: 0;
+
+	let reviewSentiment;
+	if (reviewScore < 10) {
+		reviewSentiment = "Overwhelmingly Negative";
+	} else if (reviewScore < 20) {
+		reviewSentiment = "Very Negative";
+	} else if (reviewScore < 40) {
+		reviewSentiment = "Mostly Negative";
+	} else if (reviewScore < 70) {
+		reviewSentiment = "Mixed";
+	} else if (reviewScore < 80) {
+		reviewSentiment = "Mostly Positive";
+	} else if (reviewScore < 95) {
+		reviewSentiment = "Very Positive";
+	} else {
+		reviewSentiment = "Overwhelmingly Positive";
+	}
+
 	return {
-        id: appId,
+		id: appId,
 		...rest,
 		thumbnail: `${baseUrl}${appId}/header.jpg`,
 		background: `https://store.akamai.steamstatic.com/images/storepagebackground/app/${appId}`,
@@ -36,6 +60,8 @@ export const prepareGame = (game) => {
 		publishers: publishers.split(","),
 		screenshots: screenshotList,
 		videos: videoList,
+		review_score: reviewScore,
+		review_sentiment: reviewSentiment,
 	};
 };
 

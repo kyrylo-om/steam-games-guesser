@@ -1,4 +1,4 @@
-{
+export const question_templates = {
     "media": [
         {
             "id": "screenshots",
@@ -32,27 +32,29 @@
             "id": "release_newer",
             "question": "Which game is newer?",
             "type": "compare",
-            "criteria": "date",
+            "criteria": "release_timestamp",
             "higher": 1
         },
         {
             "id": "release_older",
             "question": "Which game released first?",
             "type": "compare",
-            "criteria": "date",
+            "criteria": "release_timestamp",
             "higher": 0
         }
     ],
     "devlishers": [
         {
             "id": "developer",
-            "question": "_ is a developer of which game?",
-            "type": "select"
+            "question": (property) => `${property} is a developer of which game?`,
+            "type": "belongs",
+            "property": "developers"
         },
         {
             "id": "publisher",
-            "question": "_ is a publisher of which game?",
-            "type": "select"
+            "question": (property) => `${property} is a publisher of which game?`,
+            "type": "belongs",
+            "property": "publishers"
         },
         {
             "id": "is_self_published",
@@ -72,7 +74,7 @@
             "id": "review_count_higher",
             "question": "Which game has more English reviews?",
             "type": "compare",
-            "criteria": "review_count",
+            "criteria": "num_reviews",
             "higher": 1
         }
     ],
@@ -86,8 +88,9 @@
         },
         {
             "id": "review_sentiment",
-            "question": "Which game has _ reviews? (only one has this rating)",
-            "type": "select"
+            "question": (property) => `Which game has ${property} reviews?`,
+            "type": "belongs",
+            "property": "review_sentiment"
         }
     ],
     "reviews": [
@@ -118,8 +121,9 @@
     "required_age": [
         {
             "id": "required_age",
-            "question": "Which game is _+?",
-            "type": "select"
+            "question": (property) => `Which game is ${property}+?`,
+            "type": "belongs",
+            "property": "required_age"
         },
         {
             "id": "required_age_higher",
@@ -134,7 +138,7 @@
             "id": "metacritic_higher",
             "question": "Which game has a higher score on Metacritic?",
             "type": "compare",
-            "criteria": "metacritic",
+            "criteria": "metacritic_score",
             "higher": 1
         }
     ]

@@ -1,17 +1,7 @@
-import dailyQuestions from "./question_lists/daily.json" assert { type: "json" };
-import allQuestions from "./question_lists/all.json" assert { type: "json" };
+import { daily_templates } from "./question_templates/daily.js";
+import { question_templates } from "./question_templates/all.js";
 
-const compareValueByCriteria = {
-	price: (game) => game.price,
-	date: (game) => game.release_timestamp,
-	review_count: (game) => game.num_reviews,
-	review_score: (game) => game.num_positive_reviews / game.num_reviews,
-};
-
-const getCompareValue = (game, criteria) =>
-	compareValueByCriteria[criteria]
-		? compareValueByCriteria[criteria](game)
-		: 0;
+const getCompareValue = (game, criteria) => game[criteria] ?? 0;
 
 const getRandomInt = (max) => Math.floor(Math.random() * max);
 
@@ -75,7 +65,77 @@ const buildChoiceList = ({ count, items, allowed }) => {
 	return { correct, data };
 };
 
+// ── Select-type condition handlers ──────────────────────────
+
+const selectConditions = {
+	is_free: (game) => game.price === 0,
+	is_self_published: (game) =>
+		game.publishers.some((p) => game.developers.includes(p)),
+	playable_linux: (game) => game.platforms.includes("linux"),
+	playable_mac: (game) => game.platforms.includes("mac"),
+	multiplayer: (game) => game.multiplayer === 1,
+};
+
+const evaluateSelect = (question, game1, game2) => {
+	const handler = selectConditions[question.id];
+	if (!handler) return null;
+
+	const g1Ok = handler(game1);
+	const g2Ok = handler(game2);
+
+	if (!g1Ok && !g2Ok) return null;
+	if (g1Ok && !g2Ok) return { correct: 0 };
+	if (!g1Ok && g2Ok) return { correct: 1 };
+	return { correct: Math.random() < 0.5 ? 0 : 1 };
+};
+
+// ── Belongs-type helpers ────────────────────────────────────
+
+const hasProperty = (game, property) => {
+	const value = game[property];
+	if (Array.isArray(value)) return value.length > 0;
+	return value != null && value !== "" && value !== 0;
+};
+
+const getPropertyValue = (game, property) => {
+	const value = game[property];
+	if (Array.isArray(value) && value.length > 0) {
+		return value[getRandomInt(value.length)];
+	}
+	return value;
+};
+
+const evaluateBelongs = (question, game1, game2) => {
+	const g1Has = hasProperty(game1, question.property);
+	const g2Has = hasProperty(game2, question.property);
+
+	if (!g1Has && !g2Has) return null;
+
+	const correct = g1Has && !g2Has ? 0 : !g1Has && g2Has ? 1 : Math.random() < 0.5 ? 0 : 1;
+	const winningGame = correct === 0 ? game1 : game2;
+	const propValue = getPropertyValue(winningGame, question.property);
+
+	const questionText =
+		typeof question.question === "function"
+			? question.question(propValue)
+			: question.question;
+
+	return {
+		correct,
+		data: { [question.property]: propValue },
+		question: questionText,
+	};
+};
+
+// ── Build a single question ─────────────────────────────────
+
 const buildQuestion = (question, game1Data, game2Data) => {
+	const base = {
+		question: question.question,
+		type: question.type,
+		reveal_field: question.reveal_field,
+	};
+
 	switch (question.type) {
 		case "compare": {
 			const game1Value = getCompareValue(
@@ -95,7 +155,7 @@ const buildQuestion = (question, game1Data, game2Data) => {
 					? 0
 					: 1;
 
-			return { ...question, correct };
+			return { ...base, correct };
 		}
 		case "screenshots": {
 			const choices = buildChoiceList({
@@ -104,11 +164,7 @@ const buildQuestion = (question, game1Data, game2Data) => {
 				allowed: [true, true],
 			});
 
-			return {
-				...question,
-				correct: choices.correct,
-				data: choices.data,
-			};
+			return { ...base, correct: choices.correct, data: choices.data };
 		}
 		case "reviews": {
 			const choices = buildChoiceList({
@@ -117,11 +173,7 @@ const buildQuestion = (question, game1Data, game2Data) => {
 				allowed: [true, true],
 			});
 
-			return {
-				...question,
-				correct: choices.correct,
-				data: choices.data,
-			};
+			return { ...base, correct: choices.correct, data: choices.data };
 		}
 		case "achievements": {
 			const game1HasAchievements = game1Data.game.num_achievements > 0;
@@ -136,18 +188,14 @@ const buildQuestion = (question, game1Data, game2Data) => {
 				allowed: [game1HasAchievements, game2HasAchievements],
 			});
 
-			return {
-				...question,
-				correct: choices.correct,
-				data: choices.data,
-			};
+			return { ...base, correct: choices.correct, data: choices.data };
 		}
 		case "devlishers": {
 			const correct = Math.random() < 0.5 ? 0 : 1;
 			const winner = correct === 0 ? game1Data : game2Data;
 
 			return {
-				...question,
+				...base,
 				correct,
 				data: {
 					developer: winner.game.developers.join(", "),
@@ -155,27 +203,57 @@ const buildQuestion = (question, game1Data, game2Data) => {
 				},
 			};
 		}
+		case "select": {
+			const result = evaluateSelect(question, game1Data.game, game2Data.game);
+			if (!result) return null;
+			return { ...base, ...result };
+		}
+		case "belongs": {
+			const result = evaluateBelongs(question, game1Data.game, game2Data.game);
+			if (!result) return null;
+			return { ...base, correct: result.correct, data: result.data, question: result.question };
+		}
 		default:
 			console.error(`Unknown question type: ${question.type}`);
 			return null;
 	}
 };
 
-const shuffleQuestions = (questions) => {
-	const shuffled = [...questions];
-	for (let i = shuffled.length - 1; i > 0; i -= 1) {
-		const j = getRandomInt(i + 1);
-		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+// ── Per-category builder ────────────────────────────────────
+
+const buildOnePerCategory = (templateGroups, game1Data, game2Data) => {
+	const results = [];
+
+	for (const [revealField, groupQuestions] of Object.entries(templateGroups)) {
+		const shuffled = [...groupQuestions];
+		for (let i = shuffled.length - 1; i > 0; i -= 1) {
+			const j = getRandomInt(i + 1);
+			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+		}
+
+		let built = null;
+		for (const q of shuffled) {
+			const question = buildQuestion(
+				{ ...q, reveal_field: revealField },
+				game1Data,
+				game2Data,
+			);
+			if (question !== null) {
+				built = question;
+				break;
+			}
+		}
+
+		if (built !== null) {
+			results.push(built);
+		}
 	}
-	return shuffled;
+
+	return results;
 };
 
 export const buildDailyQuestions = (game1Data, game2Data) =>
-	dailyQuestions
-		.map((question) => buildQuestion(question, game1Data, game2Data))
-		.filter(Boolean);
+	buildOnePerCategory(daily_templates, game1Data, game2Data);
 
 export const buildQuestions = (game1Data, game2Data) =>
-	shuffleQuestions(allQuestions)
-		.map((question) => buildQuestion(question, game1Data, game2Data))
-		.filter(Boolean);
+	buildOnePerCategory(question_templates, game1Data, game2Data);

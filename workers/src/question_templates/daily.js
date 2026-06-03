@@ -1,4 +1,4 @@
-{
+export const daily_templates = {
     "media": [
         {
             "question": "Which game is this screenshot from?",
@@ -23,7 +23,7 @@
         {
             "question": "Which game is newer?",
             "type": "compare",
-            "criteria": "date",
+            "criteria": "release_timestamp",
             "higher": 1
         }
     ],
@@ -37,7 +37,7 @@
         {
             "question": "Which game has more English reviews?",
             "type": "compare",
-            "criteria": "review_count",
+            "criteria": "num_reviews",
             "higher": 1
         }
     ],
