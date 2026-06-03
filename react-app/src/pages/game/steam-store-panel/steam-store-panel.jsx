@@ -28,7 +28,7 @@ const SteamStorePanel = ({ gamePayload, feedback, revealedFields, scrollTo }) =>
       `[data-field="${field}"]`,
     );
     if (block) {
-      block.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      block.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [scrollTo]);
 

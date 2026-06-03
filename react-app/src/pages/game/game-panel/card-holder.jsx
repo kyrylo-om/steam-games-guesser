@@ -2,7 +2,7 @@ import QuestionCard from "./question-card";
 import ExtendedQuestionCard from "./extended-question-card";
 import styles from "./card-holder.module.css";
 
-const CardHolder = ({ question, leftGame, rightGame, subIndex }) => {
+const CardHolder = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPickRight, disabled }) => {
   const hasSubquestions =
     question?.data &&
     Array.isArray(question.data) &&
@@ -23,6 +23,23 @@ const CardHolder = ({ question, leftGame, rightGame, subIndex }) => {
       ) : (
         <QuestionCard question={question?.question} />
       )}
+
+      <button
+        className={styles.overlayLeft}
+        onClick={onPickLeft}
+        disabled={disabled}
+        type="button"
+      >
+        <span className={styles.arrow}>&lt;</span>
+      </button>
+      <button
+        className={styles.overlayRight}
+        onClick={onPickRight}
+        disabled={disabled}
+        type="button"
+      >
+        <span className={styles.arrow}>&gt;</span>
+      </button>
     </section>
   );
 };

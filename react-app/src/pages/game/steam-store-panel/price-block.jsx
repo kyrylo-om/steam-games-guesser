@@ -9,7 +9,7 @@ const PriceBlock = ({ gameName, price, isRevealed = false }) => {
           <span className={styles.purchaseText}>Buy {gameName}</span>
           <div className={styles.priceContainer}>
             <span className={styles.priceButton}>Price:</span>
-            <span className={styles.price}>{price}</span>
+            <span className={styles.price}>{price / 100}$</span>
           </div>
         </div>
       </RevealWrapper>
