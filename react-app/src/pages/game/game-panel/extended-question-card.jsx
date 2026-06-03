@@ -95,18 +95,20 @@ const ExtendedQuestionCard = ({ question, data, correct, type, leftGame, rightGa
 
   return (
     <div className={styles.card}>
-      <div className={styles.question}>{question}</div>
+      <div className="grow content-center">
+        <div className={styles.question}>{question}</div>
 
-      <div className={styles.slideArea}>
-        <div className={styles.slideWrapper} key={subIndex}>
-          {type === "screenshots" && <ScreenshotSlot src={item} />}
-          {type === "achievements" && (
-            <AchievementSlot
-              achievement={item}
-              gameName={currentSub.gamePayload?.game?.name}
-            />
-          )}
-          {type === "reviews" && <ReviewSlot review={item} />}
+        <div className={styles.slideArea}>
+          <div className={styles.slideWrapper} key={subIndex}>
+            {type === "screenshots" && <ScreenshotSlot src={item} />}
+            {type === "achievements" && (
+              <AchievementSlot
+                achievement={item}
+                gameName={currentSub.gamePayload?.game?.name}
+              />
+            )}
+            {type === "reviews" && <ReviewSlot review={item} />}
+          </div>
         </div>
       </div>
 

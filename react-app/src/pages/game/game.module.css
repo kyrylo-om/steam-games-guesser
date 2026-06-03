@@ -1,6 +1,6 @@
 .page {
   display: grid;
-  grid-template-columns: minmax(0, 33%) minmax(160px, 33%) minmax(0, 33%);
+  grid-template-columns: minmax(0, 35%) minmax(160px, 30%) minmax(0, 35%);
   min-height: 100vh;
 }
 

@@ -27,9 +27,9 @@ const ReviewsBlock = ({ reviewCount, reviewScoreDesc, reviewSentiment, isReveale
             {reviewScoreDesc}
           </span>
           {" ("}
-          <span className={styles.reviewSentiment}>{reviewSentiment}</span>
+          <span className={styles.reviewSentiment}>{reviewSentiment}%</span>
           {" of "}
-          <span className={styles.reviewCount}>{formattedReviewCount}</span>
+          <span className={styles.reviewCount}>{reviewCount}</span>
           {")"}
         </div>
       </RevealWrapper>

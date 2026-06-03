@@ -67,8 +67,8 @@ const SteamStorePanel = ({ gamePayload, feedback, revealedFields, scrollTo }) =>
         </div>
         <div data-field="reviews">
           <ReviewsBlock
-            reviewScoreDesc="yes"
-            reviewSentiment={game.num_reviews / 100 * game.num_positive_reviews}
+            reviewScoreDesc={game.review_sentiment}
+            reviewSentiment={game.review_score}
             reviewCount={game.num_reviews}
             isRevealed={isReviewRevealed}
           />

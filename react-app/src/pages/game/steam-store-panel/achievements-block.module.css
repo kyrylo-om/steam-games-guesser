@@ -16,6 +16,7 @@
   padding: 10px 16px;
   border-radius: 2px;
   box-sizing: border-box;
+  justify-content: space-between;
 }
 
 .achievements-text-container {

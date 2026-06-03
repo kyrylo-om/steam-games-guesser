@@ -1,13 +1,13 @@
 .developers-block {
   width: 100%;
   margin-top: 8px;
-  height: 5rem;
 }
 
 .rows {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-top: 1rem;
 }
 
 .row {
@@ -15,6 +15,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
+  line-height: 1.1rem;
 }
 
 .label {
@@ -24,6 +25,5 @@
 
 .value {
   color: #67c1f5;
-  text-align: right;
   flex: 1;
 }

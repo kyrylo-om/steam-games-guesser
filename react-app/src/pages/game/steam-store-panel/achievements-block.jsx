@@ -23,7 +23,7 @@ const AchievementsBlock = ({
           <div className={styles.achievementIconsContainer}>
             {icons.map((achievement, index) => {
               const icon =
-                achievement?.path ||
+                achievement?.icon ||
                 (typeof achievement === "string" ? achievement : null);
 
               if (!icon) return null;
