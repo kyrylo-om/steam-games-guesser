@@ -65,10 +65,10 @@ export const prepareGame = (game) => {
 	};
 };
 
-export const prepareAchievements = (achievements) =>
+export const prepareAchievements = (achievements, app_id) =>
 	achievements.map((achievement) => ({
 		name: achievement.name,
-		icon: achievement.icon,
+		icon: `cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/${app_id}/${achievement.icon}`,
 	}));
 
 export const prepareReviews = (reviews) =>
@@ -107,7 +107,7 @@ export const getAppInfo = async (db, appId) => {
 
 	return {
 		game: prepareGame(game),
-		achievements: prepareAchievements(achievementsResult.results),
+		achievements: prepareAchievements(achievementsResult.results, appId),
 		reviews: prepareReviews(reviewsResult.results),
 	};
 };
