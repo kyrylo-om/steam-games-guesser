@@ -1,9 +1,10 @@
 import AppHeader from "../../../components/app-header";
 import CardHolder from "./card-holder";
+import PickButtons from "./pick-buttons";
 import PowerUpContainer from "./power-up-container";
 import styles from "./game-panel.module.css";
 
-const GamePanel = () => {
+const GamePanel = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPickRight, disabled }) => {
   return (
     <aside className={styles.spine}>
       <AppHeader />
@@ -28,7 +29,14 @@ const GamePanel = () => {
           </div>
         </section>
       </section>
-      <CardHolder />
+      <CardHolder question={question} leftGame={leftGame} rightGame={rightGame} subIndex={subIndex} />
+      <PickButtons
+        leftName={leftGame?.game?.name ?? "Game A"}
+        rightName={rightGame?.game?.name ?? "Game B"}
+        onPickLeft={onPickLeft}
+        onPickRight={onPickRight}
+        disabled={disabled}
+      />
     </aside>
   );
 };

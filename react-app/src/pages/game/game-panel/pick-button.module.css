@@ -1,0 +1,26 @@
+.button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: #1b6a36;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background: #218041;
+}
+
+.button:active:not(:disabled) {
+  background: #155828;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

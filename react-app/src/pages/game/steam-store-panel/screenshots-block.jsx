@@ -192,7 +192,7 @@ const ScreenshotsBlock = ({ game, isRevealed = true }) => {
 
   return (
     <div className={styles.screenshotsBlock}>
-      <RevealWrapper isRevealed={isRevealed}>
+      <RevealWrapper isRevealed={isRevealed} placeholderText={"Media"} >
         <div className={styles.screenshotsContent}>
           <div className={styles.carouselStage}>
             {activeMedia?.kind === "movie" ? (
