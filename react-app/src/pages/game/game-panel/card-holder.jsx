@@ -1,28 +1,59 @@
+import { useEffect, useRef, useState } from "react";
 import QuestionCard from "./question-card";
 import ExtendedQuestionCard from "./extended-question-card";
 import styles from "./card-holder.module.css";
 
-const CardHolder = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPickRight, disabled }) => {
+const CardHolder = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPickRight, disabled: disabledProp, feedback }) => {
+  const [animationPhase, setAnimationPhase] = useState("idle");
+  const [displayedQuestion, setDisplayedQuestion] = useState(question);
+  const prevQuestionRef = useRef(question);
+
   const hasSubquestions =
-    question?.data &&
-    Array.isArray(question.data) &&
-    ["screenshots", "achievements", "reviews"].includes(question.type);
+    displayedQuestion?.data &&
+    Array.isArray(displayedQuestion.data) &&
+    ["screenshots", "achievements", "reviews"].includes(displayedQuestion.type);
+
+  useEffect(() => {
+    if (question !== prevQuestionRef.current) {
+      // Question changed — start exit animation on old content
+      setAnimationPhase("exiting");
+
+      const exitTimer = setTimeout(() => {
+        // Swap to new question content and begin enter animation
+        setDisplayedQuestion(question);
+        setAnimationPhase("entering");
+      }, 900);
+
+      const enterTimer = setTimeout(() => {
+        setAnimationPhase("idle");
+      }, 1500);
+
+      prevQuestionRef.current = question;
+
+      return () => {
+        clearTimeout(exitTimer);
+        clearTimeout(enterTimer);
+      };
+    }
+  }, [question]);
+
+  const disabled = disabledProp;
 
   return (
-    <section className={styles.panel}>
-      <div className={styles.content}>
+    <section className={styles.panel} data-disabled={disabled} data-feedback={animationPhase === "exiting" ? feedback : ""}>
+      <div className={`${styles.content} ${animationPhase !== "idle" ? styles[animationPhase] : ""}`}>
         {hasSubquestions ? (
           <ExtendedQuestionCard
-            question={question.question}
-            data={question.data}
-            correct={question.correct}
-            type={question.type}
+            question={displayedQuestion.question}
+            data={displayedQuestion.data}
+            correct={displayedQuestion.correct}
+            type={displayedQuestion.type}
             leftGame={leftGame}
             rightGame={rightGame}
             subIndex={subIndex}
           />
         ) : (
-          <QuestionCard question={question?.question} />
+          <QuestionCard question={displayedQuestion?.question} />
         )}
       </div>
 

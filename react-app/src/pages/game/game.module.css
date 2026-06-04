@@ -22,10 +22,6 @@
   justify-self: start;
 }
 
-.side:hover {
-  background: rgba(248, 250, 252, 0.04);
-}
-
 .center {
   position: sticky;
   top: 0;

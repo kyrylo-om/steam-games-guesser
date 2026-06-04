@@ -91,7 +91,7 @@ const Game = () => {
       return;
     }
 
-    // Final answer — reveal field instantly, then advance after feedback
+    // Final answer — advance immediately so CardHolder exit animation starts
     const revealField = currentQuestion?.reveal_field;
     if (revealField) {
       setRevealedFields((prev) => new Set(prev).add(revealField));
@@ -101,13 +101,13 @@ const Game = () => {
     setFeedback(isCorrect ? "correct" : "incorrect");
     setSelectedSide(side);
     setIsLocked(true);
+    advanceToNextQuestion();
 
     setTimeout(() => {
       setFeedback(null);
       setSelectedSide(null);
       setIsLocked(false);
-      advanceToNextQuestion();
-    }, 1000);
+    }, 1500);
   };
 
   if (isLoading) {
@@ -146,6 +146,7 @@ const Game = () => {
           onPickLeft={() => handlePick(0)}
           onPickRight={() => handlePick(1)}
           disabled={isLocked}
+          feedback={feedback}
         />
       </section>
 
