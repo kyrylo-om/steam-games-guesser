@@ -9,13 +9,17 @@ import ScreenshotsBlock from "./screenshots-block";
 import ThumbnailBlock from "./thumbnail-block";
 import FeedbackOverlay from "../game-panel/feedback-overlay";
 
-const SteamStorePanel = ({ gamePayload, revealedFields, scrollTo, feedback, animDuration }) => {
+const SteamStorePanel = ({ gamePayload, revealedFields, pendingReveal, scrollTo, feedback, animDuration }) => {
   const game = gamePayload.game;
   const contentRef = useRef(null);
 
   const isRevealed = (field) => revealedFields?.has(field) ?? false;
   const isReviewRevealed =
     isRevealed("review_count") || isRevealed("review_score");
+
+  const isPending = (field) => pendingReveal === field;
+  const isReviewPending =
+    pendingReveal === "review_count" || pendingReveal === "review_score" || pendingReveal === "reviews";
 
   const FIELD_MAP = {
     review_count: "reviews",
@@ -45,6 +49,7 @@ const SteamStorePanel = ({ gamePayload, revealedFields, scrollTo, feedback, anim
             title={game.name}
             imageSrc={game.thumbnail}
             isRevealed={isRevealed("media")}
+            isPending={isPending("media")}
         />
         </div>
 
@@ -58,12 +63,14 @@ const SteamStorePanel = ({ gamePayload, revealedFields, scrollTo, feedback, anim
             developers={game.developers}
             publishers={game.publishers}
             isRevealed={isRevealed("devlishers")}
+            isPending={isPending("devlishers")}
           />
         </div>
         <div data-field="release">
           <ReleaseDateBlock
             releaseDate={game.release_timestamp}
             isRevealed={isRevealed("release")}
+            isPending={isPending("release")}
           />
         </div>
         <div data-field="reviews">
@@ -72,12 +79,14 @@ const SteamStorePanel = ({ gamePayload, revealedFields, scrollTo, feedback, anim
             reviewSentiment={game.review_score}
             reviewCount={game.num_reviews}
             isRevealed={isReviewRevealed}
+            isPending={isReviewPending}
           />
         </div>
         <div data-field="screenshots">
           <ScreenshotsBlock
             game={game}
             isRevealed={isRevealed("media")}
+            isPending={isPending("media")}
           />
         </div>
 
@@ -86,6 +95,7 @@ const SteamStorePanel = ({ gamePayload, revealedFields, scrollTo, feedback, anim
             gameName={game.name}
             price={game.price}
             isRevealed={isRevealed("price")}
+            isPending={isPending("price")}
           />
         </div>
 
@@ -95,6 +105,7 @@ const SteamStorePanel = ({ gamePayload, revealedFields, scrollTo, feedback, anim
             achievementIcons={gamePayload.achievements}
             gameName={game.name}
             isRevealed={isRevealed("achievements")}
+            isPending={isPending("achievements")}
           />
         </div>
       </div>

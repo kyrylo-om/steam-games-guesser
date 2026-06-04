@@ -57,6 +57,8 @@ const Game = () => {
     [questions, currentQuestionIndex],
   );
 
+  const pendingReveal = currentQuestion?.reveal_field ?? null;
+
   const hasSubquestions =
     currentQuestion?.correct &&
     Array.isArray(currentQuestion.correct) &&
@@ -135,6 +137,7 @@ const Game = () => {
         <SteamStorePanel
           gamePayload={leftGame}
           revealedFields={revealedFields}
+          pendingReveal={pendingReveal}
           scrollTo={scrollTo}
           feedback={selectedSide === 0 ? feedback : null}
           animDuration={subquestionAnswered ? 300 : 800}
@@ -161,6 +164,7 @@ const Game = () => {
         <SteamStorePanel
           gamePayload={rightGame}
           revealedFields={revealedFields}
+          pendingReveal={pendingReveal}
           scrollTo={scrollTo}
           feedback={selectedSide === 1 ? feedback : null}
           animDuration={subquestionAnswered ? 300 : 800}

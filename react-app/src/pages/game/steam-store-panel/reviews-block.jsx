@@ -1,7 +1,7 @@
 import RevealWrapper from "./reveal-wrapper";
 import styles from "./reviews-block.module.css";
 
-const ReviewsBlock = ({ reviewCount, reviewScoreDesc, reviewSentiment, isRevealed = false }) => {
+const ReviewsBlock = ({ reviewCount, reviewScoreDesc, reviewSentiment, isRevealed = false, isPending = false }) => {
   const formattedReviewCount = Number.isFinite(reviewCount)
     ? reviewCount.toLocaleString()
     : "0";
@@ -17,7 +17,7 @@ const ReviewsBlock = ({ reviewCount, reviewScoreDesc, reviewSentiment, isReveale
 
   return (
     <div className={styles.reviewsBlock}>
-      <RevealWrapper isRevealed={isRevealed} placeholderText={"Reviews"}>
+      <RevealWrapper isRevealed={isRevealed} placeholderText={"Reviews"} isPending={isPending}>
         <div className={styles.reviews}>
           Reviews:
           <span

@@ -1,10 +1,10 @@
 import RevealWrapper from "./reveal-wrapper";
 import styles from "./price-block.module.css";
 
-const PriceBlock = ({ gameName, price, isRevealed = false }) => {
+const PriceBlock = ({ gameName, price, isRevealed = false, isPending = false }) => {
   return (
     <div className={styles.priceBlock}>
-      <RevealWrapper isRevealed={isRevealed} placeholderText={"Price"}>
+      <RevealWrapper isRevealed={isRevealed} placeholderText={"Price"} isPending={isPending}>
         <div className={styles.purchaseContainer}>
           <span className={styles.purchaseText}>Buy {gameName}</span>
           <div className={styles.priceContainer}>

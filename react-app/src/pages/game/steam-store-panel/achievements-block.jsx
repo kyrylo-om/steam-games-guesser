@@ -5,7 +5,7 @@ const AchievementsBlock = ({
   achievementCount,
   achievementIcons,
   gameName,
-  isRevealed = false,
+  isRevealed = false, isPending = false,
 }) => {
   const count = Number.isFinite(achievementCount)
     ? achievementCount
@@ -14,7 +14,7 @@ const AchievementsBlock = ({
 
   return (
     <div className={styles.achievementsBlock}>
-      <RevealWrapper isRevealed={isRevealed} placeholderText={"Achievements"}>
+      <RevealWrapper isRevealed={isRevealed} placeholderText={"Achievements"} isPending={isPending}>
         <div className={styles.achievementsContainer}>
           <div className={styles.achievementsTextContainer}>
             <span className={styles.achievementsText}>Achievements</span>

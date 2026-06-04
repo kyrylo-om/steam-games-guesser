@@ -1,8 +1,9 @@
 import Placeholder from "./placeholder";
 import styles from "./reveal-wrapper.module.css";
 
-const RevealWrapper = ({ isRevealed, placeholderText, children }) => {
+const RevealWrapper = ({ isRevealed, placeholderText, isPending = false, children }) => {
   const isVisible = Boolean(isRevealed);
+  const isPulsing = isPending && !isVisible;
 
   return (
     <div
@@ -14,7 +15,7 @@ const RevealWrapper = ({ isRevealed, placeholderText, children }) => {
         data-layer="placeholder"
         aria-hidden={isVisible}
       >
-        <Placeholder text={placeholderText} />
+        <Placeholder text={placeholderText} isPulsing={isPulsing} />
       </div>
       <div
         className={styles.revealLayer}

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import RevealWrapper from "./reveal-wrapper";
 import styles from "./screenshots-block.module.css";
 
-const ScreenshotsBlock = ({ game, isRevealed = true }) => {
+const ScreenshotsBlock = ({ game, isRevealed = true, isPending = false }) => {
   const movieVideoRef = useRef(null);
   const timelineRef = useRef(null);
   const [isMoviePlaying, setIsMoviePlaying] = useState(false);
@@ -192,7 +192,7 @@ const ScreenshotsBlock = ({ game, isRevealed = true }) => {
 
   return (
     <div className={styles.screenshotsBlock}>
-      <RevealWrapper isRevealed={isRevealed} placeholderText={"Media"} >
+      <RevealWrapper isRevealed={isRevealed} placeholderText={"Media"} isPending={isPending}>
         <div className={styles.screenshotsContent}>
           <div className={styles.carouselStage}>
             {activeMedia?.kind === "movie" ? (
