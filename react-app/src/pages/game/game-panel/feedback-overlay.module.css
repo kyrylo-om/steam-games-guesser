@@ -1,0 +1,74 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.25s ease;
+}
+
+.overlay.visible {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.overlay.fading {
+  background: rgba(0, 0, 0, 0);
+}
+
+.iconBox {
+  position: fixed;
+  top: 50vh;
+  transform: translateY(-50%);
+  width: 10%;
+  max-width: 300px;
+  transition: opacity 0.25s ease;
+}
+
+.overlay.fading .iconBox {
+  opacity: 0;
+}
+
+.icon {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+/* ── Checkmark: draw the whole path in one go ─── */
+
+.checkmark {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation-name: drawStroke;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+  stroke: #51d67a;
+  filter: drop-shadow(0 0 12px rgba(81, 214, 122, 0.7));
+}
+
+.crossLine1 {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation-name: drawStroke;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+  stroke: #e04545;
+  filter: drop-shadow(0 0 12px rgba(224, 69, 69, 0.7));
+}
+
+.crossLine2 {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation-name: drawStroke;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+  stroke: #e04545;
+  filter: drop-shadow(0 0 12px rgba(224, 69, 69, 0.7));
+}
+
+@keyframes drawStroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

@@ -3,7 +3,7 @@ import QuestionCard from "./question-card";
 import ExtendedQuestionCard from "./extended-question-card";
 import styles from "./card-holder.module.css";
 
-const CardHolder = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPickRight, disabled: disabledProp, feedback }) => {
+const CardHolder = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPickRight, onHoverLeft, onHoverRight, onHoverEnd, disabled: disabledProp, feedback }) => {
   const [animationPhase, setAnimationPhase] = useState("idle");
   const [displayedQuestion, setDisplayedQuestion] = useState(question);
   const prevQuestionRef = useRef(question);
@@ -60,18 +60,22 @@ const CardHolder = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPic
       <button
         className={styles.overlayLeft}
         onClick={onPickLeft}
+        onMouseEnter={onHoverLeft}
+        onMouseLeave={onHoverEnd}
         disabled={disabled}
         type="button"
       >
-        <span className={styles.arrow}>&lt;</span>
+        <span className={styles.arrow}>❰</span>
       </button>
       <button
         className={styles.overlayRight}
         onClick={onPickRight}
+        onMouseEnter={onHoverRight}
+        onMouseLeave={onHoverEnd}
         disabled={disabled}
         type="button"
       >
-        <span className={styles.arrow}>&gt;</span>
+        <span className={styles.arrow}>❱</span>
       </button>
     </section>
   );

@@ -11,9 +11,11 @@ const Game = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [subIndex, setSubIndex] = useState(0);
   const [feedback, setFeedback] = useState(null);
+  const [subquestionAnswered, setSubquestionAnswered] = useState(null);
   const [isLocked, setIsLocked] = useState(false);
   const [revealedFields, setRevealedFields] = useState(new Set());
   const [scrollTo, setScrollTo] = useState(null);
+  const [hoveredSide, setHoveredSide] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -65,7 +67,6 @@ const Game = () => {
   };
 
   const advanceToNextQuestion = () => {
-    setSubIndex(0);
     setCurrentQuestionIndex((prev) => prev + 1);
   };
 
@@ -81,12 +82,12 @@ const Game = () => {
 
     if (isNotLastSubquestion) {
       setFeedback(isCorrect ? "correct" : "incorrect");
+      setSubquestionAnswered(true);
       setSelectedSide(side);
       advanceSubquestion();
       setTimeout(() => {
         setFeedback(null);
         setSelectedSide(null);
-        setIsLocked(false);
       }, 1000);
       return;
     }
@@ -99,6 +100,7 @@ const Game = () => {
     }
 
     setFeedback(isCorrect ? "correct" : "incorrect");
+    setSubquestionAnswered(false);
     setSelectedSide(side);
     setIsLocked(true);
     advanceToNextQuestion();
@@ -107,6 +109,7 @@ const Game = () => {
       setFeedback(null);
       setSelectedSide(null);
       setIsLocked(false);
+      setSubIndex(0);
     }, 1500);
   };
 
@@ -128,12 +131,13 @@ const Game = () => {
 
   return (
     <main className={styles.page}>
-      <section className={styles.side}>
+      <section className={styles.side} data-accent={hoveredSide === 0}>
         <SteamStorePanel
           gamePayload={leftGame}
-          feedback={selectedSide === 0 ? feedback : null}
           revealedFields={revealedFields}
           scrollTo={scrollTo}
+          feedback={selectedSide === 0 ? feedback : null}
+          animDuration={subquestionAnswered ? 300 : 800}
         />
       </section>
 
@@ -147,15 +151,19 @@ const Game = () => {
           onPickRight={() => handlePick(1)}
           disabled={isLocked}
           feedback={feedback}
+          onHoverLeft={() => setHoveredSide(0)}
+          onHoverRight={() => setHoveredSide(1)}
+          onHoverEnd={() => setHoveredSide(null)}
         />
       </section>
 
-      <section className={styles.side}>
+      <section className={styles.side} data-accent={hoveredSide === 1}>
         <SteamStorePanel
           gamePayload={rightGame}
-          feedback={selectedSide === 1 ? feedback : null}
           revealedFields={revealedFields}
           scrollTo={scrollTo}
+          feedback={selectedSide === 1 ? feedback : null}
+          animDuration={subquestionAnswered ? 300 : 800}
         />
       </section>
     </main>

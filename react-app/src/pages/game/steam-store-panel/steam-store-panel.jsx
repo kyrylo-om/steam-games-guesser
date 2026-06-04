@@ -7,8 +7,9 @@ import ReleaseDateBlock from "./release-date-block";
 import ReviewsBlock from "./reviews-block";
 import ScreenshotsBlock from "./screenshots-block";
 import ThumbnailBlock from "./thumbnail-block";
+import FeedbackOverlay from "../game-panel/feedback-overlay";
 
-const SteamStorePanel = ({ gamePayload, feedback, revealedFields, scrollTo }) => {
+const SteamStorePanel = ({ gamePayload, revealedFields, scrollTo, feedback, animDuration }) => {
   const game = gamePayload.game;
   const contentRef = useRef(null);
 
@@ -35,8 +36,8 @@ const SteamStorePanel = ({ gamePayload, feedback, revealedFields, scrollTo }) =>
   return (
     <section
       className={styles.panel}
-      data-feedback={feedback}
     >
+      <FeedbackOverlay feedback={feedback} duration={animDuration} />
 
       <div className={styles.content} ref={contentRef}>
         <div data-field="media">

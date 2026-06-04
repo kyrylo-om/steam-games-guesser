@@ -3,7 +3,7 @@ import CardHolder from "./card-holder";
 import PowerUpContainer from "./power-up-container";
 import styles from "./game-panel.module.css";
 
-const GamePanel = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPickRight, disabled, feedback }) => {
+const GamePanel = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPickRight, disabled, feedback, onHoverLeft, onHoverRight, onHoverEnd }) => {
   return (
     <aside className={styles.spine}>
       <AppHeader />
@@ -35,6 +35,9 @@ const GamePanel = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPick
         subIndex={subIndex}
         onPickLeft={onPickLeft}
         onPickRight={onPickRight}
+        onHoverLeft={onHoverLeft}
+        onHoverRight={onHoverRight}
+        onHoverEnd={onHoverEnd}
         disabled={disabled}
         feedback={feedback}
       />
