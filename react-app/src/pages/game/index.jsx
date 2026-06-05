@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import GamePanel from "./game-panel/game-panel";
 import SteamStorePanel from "./steam-store-panel/steam-store-panel";
 import styles from "./game.module.css";
 
-const Game = () => {
+const Game = ({ mode }) => {
+  const navigate = useNavigate();
+  const { date } = useParams();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -27,10 +30,17 @@ const Game = () => {
       try {
         setIsLoading(true);
         setIsError(false);
-        const response = await fetch(
-          "https://steam-db-updater.kyrylo-omelianchuk.workers.dev/get-match",
-          { signal: controller.signal },
-        );
+
+        const baseEndpoint =
+          mode === "daily"
+            ? "https://steam-db-updater.kyrylo-omelianchuk.workers.dev/get-daily-match"
+            : "https://steam-db-updater.kyrylo-omelianchuk.workers.dev/get-match";
+
+        const url = date
+          ? `${baseEndpoint}?date=${encodeURIComponent(date)}`
+          : baseEndpoint;
+
+        const response = await fetch(url, { signal: controller.signal });
 
         if (!response.ok) {
           throw new Error(`Failed to load match: ${response.status}`);
@@ -144,16 +154,21 @@ const Game = () => {
   };
 
   const handleNextMatch = () => {
-    window.location.reload();
+    if (mode === "daily") {
+      navigate('/');
+    }
+    else {
+      window.location.reload();
+    }
   };
 
-  if (isLoading) {
-    return <main className={styles.state}>Loading daily challenge...</main>;
+  if (isLoading || !leftGame || !rightGame) {
+    return <main className={styles.state}>Loading match...</main>;
   }
 
-  if (isError || !leftGame || !rightGame) {
+  if (isError) {
     return (
-      <main className={styles.state}>Unable to load daily challenge.</main>
+      <main className={styles.state}>Unable to load match. Please try again.</main>
     );
   }
 
@@ -190,6 +205,7 @@ const Game = () => {
           leftGame={leftGame}
           rightGame={rightGame}
           onNextMatch={handleNextMatch}
+          mode={mode}
         />
       </section>
 

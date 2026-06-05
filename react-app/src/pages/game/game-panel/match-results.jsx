@@ -1,6 +1,6 @@
 import styles from "./match-results.module.css";
 
-const MatchResults = ({ leftGame, rightGame, score, onNextMatch }) => {
+const MatchResults = ({ leftGame, rightGame, score, onNextMatch, mode }) => {
   return (
     <div className={styles.wrapper}>
 
@@ -30,7 +30,7 @@ const MatchResults = ({ leftGame, rightGame, score, onNextMatch }) => {
       </div>
 
       <button className={styles.nextButton} onClick={onNextMatch}>
-        Next match
+        {mode === "daily" ? "Back" : "Next match"}
       </button>
     </div>
   );

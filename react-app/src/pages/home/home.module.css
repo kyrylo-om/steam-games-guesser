@@ -1,50 +1,77 @@
 .page {
-	min-height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 48px 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  padding: 24px;
+  background: #121f2a;
+  color: #c6d4df;
 }
 
-.card {
-	max-width: 520px;
-	text-align: center;
-	background: rgba(17, 26, 35, 0.85);
-	border: 1px solid var(--stroke);
-	border-radius: 16px;
-	padding: 40px 32px;
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-}
-
-.kicker {
-	font-size: 0.8rem;
-	text-transform: uppercase;
-	letter-spacing: 0.18em;
-	color: var(--accent-2);
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
 }
 
 .title {
-	font-family: var(--display-font);
-	font-size: 2.4rem;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(103, 193, 245, 0.2);
+  margin: 0;
 }
 
-.copy {
-	color: var(--muted);
+.subtitle {
+  font-size: 1.05rem;
+  color: #8fa3b0;
+  margin: 0;
 }
 
-.cta {
-	align-self: center;
-	padding: 12px 22px;
-	border-radius: 999px;
-	border: 1px solid var(--stroke);
-	background: rgba(11, 17, 23, 0.8);
-	text-decoration: none;
-	transition: background-color 120ms ease, border-color 120ms ease;
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 320px;
 }
 
-.cta:hover {
-	background: rgba(20, 184, 166, 0.12);
-	border-color: rgba(20, 184, 166, 0.45);
+.primaryButton {
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 6px;
+  border: 1px solid #2a4a5c;
+  background: #1b2d3b;
+  color: #c6d4df;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.primaryButton:hover {
+  border-color: #67c1f5;
+  background: #1e3342;
+  color: #ffffff;
+}
+
+.historyButton {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid #19303e;
+  background: transparent;
+  color: #798a95;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.historyButton:hover {
+  color: #8fa3b0;
+  border-color: #2a4a5c;
 }

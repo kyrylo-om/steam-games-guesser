@@ -1,21 +1,42 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./home.module.css";
 
 const Home = () => {
-	return (
-		<main className={styles.page}>
-			<div className={styles.card}>
-				<p className={styles.kicker}>Steam Showdown</p>
-				<h1 className={styles.title}>Fast, blind Steam comparisons.</h1>
-				<p className={styles.copy}>
-					Pick the side you believe is correct. Reveal data as you go.
-				</p>
-				<Link className={styles.cta} to="/play">
-					Start the daily challenge
-				</Link>
-			</div>
-		</main>
-	);
+  const navigate = useNavigate();
+
+  return (
+    <main className={styles.page}>
+      <div className={styles.hero}>
+        <h1 className={styles.title}>Steam Showdown</h1>
+        <p className={styles.subtitle}>
+          Guess which Steam game matches the clue.
+        </p>
+      </div>
+
+      <div className={styles.actions}>
+        <button
+          className={styles.primaryButton}
+          onClick={() => navigate("/play")}
+        >
+          Play Random
+        </button>
+
+        <button
+          className={styles.primaryButton}
+          onClick={() => navigate("/daily")}
+        >
+          Play Daily
+        </button>
+
+        <button
+          className={styles.historyButton}
+          onClick={() => navigate("/daily-history")}
+        >
+          Daily Match History
+        </button>
+      </div>
+    </main>
+  );
 };
 
 export default Home;
