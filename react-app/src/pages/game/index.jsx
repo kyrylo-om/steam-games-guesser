@@ -16,6 +16,8 @@ const Game = () => {
   const [revealedFields, setRevealedFields] = useState(new Set());
   const [scrollTo, setScrollTo] = useState(null);
   const [hoveredSide, setHoveredSide] = useState(null);
+  const [score, setScore] = useState(0);
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -51,6 +53,8 @@ const Game = () => {
   const leftGame = useMemo(() => data?.games?.[0] ?? null, [data]);
   const rightGame = useMemo(() => data?.games?.[1] ?? null, [data]);
   const questions = useMemo(() => data?.questions ?? [], [data]);
+  const totalRevealFields = useMemo(() => data?.questions?.length);
+  const revealPercent = useMemo(() => Math.round((revealedFields.size / totalRevealFields) * 100,));
 
   const currentQuestion = useMemo(
     () => questions[currentQuestionIndex] ?? null,
@@ -91,6 +95,14 @@ const Game = () => {
         setFeedback(null);
         setSelectedSide(null);
       }, 1000);
+      if (isCorrect) {
+        if (subIndex === 0) {
+          setScore((prev) => prev + 100);
+        }
+        else {
+          setScore((prev) => prev + 50);
+        }
+      }
       return;
     }
 
@@ -99,6 +111,15 @@ const Game = () => {
     if (revealField) {
       setRevealedFields((prev) => new Set(prev).add(revealField));
       setScrollTo(revealField);
+    }
+
+    if (isCorrect) {
+      if (subIndex === 0) {
+        setScore((prev) => prev + 200);
+      }
+      else {
+        setScore((prev) => prev + 50);
+      }
     }
 
     setFeedback(isCorrect ? "correct" : "incorrect");
@@ -157,6 +178,9 @@ const Game = () => {
           onHoverLeft={() => setHoveredSide(0)}
           onHoverRight={() => setHoveredSide(1)}
           onHoverEnd={() => setHoveredSide(null)}
+          revealPercent={revealPercent}
+          score={score}
+          round={currentQuestionIndex + 1}
         />
       </section>
 

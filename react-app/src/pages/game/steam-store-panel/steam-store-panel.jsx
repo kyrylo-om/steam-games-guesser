@@ -7,7 +7,7 @@ import ReleaseDateBlock from "./release-date-block";
 import ReviewsBlock from "./reviews-block";
 import ScreenshotsBlock from "./screenshots-block";
 import ThumbnailBlock from "./thumbnail-block";
-import FeedbackOverlay from "../game-panel/feedback-overlay";
+import FeedbackOverlay from "./feedback-overlay";
 
 const SteamStorePanel = ({ gamePayload, revealedFields, pendingReveal, scrollTo, feedback, animDuration }) => {
   const game = gamePayload.game;
