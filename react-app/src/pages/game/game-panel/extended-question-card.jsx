@@ -1,6 +1,22 @@
 import { useMemo } from "react";
 import styles from "./extended-question-card.module.css";
 
+const DevlishersSlot = ({ data }) => {
+  if (!data) return null;
+  return (
+    <div className={styles.devlishersSlot}>
+      <div className={styles.devlisherRow}>
+        <span className={styles.devlisherLabel}>Developer</span>
+        <span className={styles.devlisherValue}>{data.developer}</span>
+      </div>
+      <div className={styles.devlisherRow}>
+        <span className={styles.devlisherLabel}>Publisher</span>
+        <span className={styles.devlisherValue}>{data.publisher}</span>
+      </div>
+    </div>
+  );
+};
+
 const ScreenshotSlot = ({ src }) => {
   if (!src) return null;
   return (
@@ -64,6 +80,17 @@ const ReviewSlot = ({ review }) => {
 };
 
 const ExtendedQuestionCard = ({ question, data, correct, type, leftGame, rightGame, subIndex }) => {
+  if (type === "devlishers") {
+    return (
+      <div className={styles.card}>
+        <div className="grow content-center">
+          <div className={styles.question}>{question}</div>
+          <DevlishersSlot data={data} />
+        </div>
+      </div>
+    );
+  }
+
   const subQuestions = useMemo(() => {
     if (!data || !correct) return [];
     return data.map((itemIndex, i) => {

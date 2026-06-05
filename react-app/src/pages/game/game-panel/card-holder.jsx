@@ -10,16 +10,15 @@ const CardHolder = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPic
 
   const hasSubquestions =
     displayedQuestion?.data &&
-    Array.isArray(displayedQuestion.data) &&
-    ["screenshots", "achievements", "reviews"].includes(displayedQuestion.type);
+    (displayedQuestion.type === "devlishers" ||
+     (Array.isArray(displayedQuestion.data) &&
+      ["screenshots", "achievements", "reviews"].includes(displayedQuestion.type)));
 
   useEffect(() => {
     if (question !== prevQuestionRef.current) {
-      // Question changed — start exit animation on old content
       setAnimationPhase("exiting");
 
       const exitTimer = setTimeout(() => {
-        // Swap to new question content and begin enter animation
         setDisplayedQuestion(question);
         setAnimationPhase("entering");
       }, 900);
