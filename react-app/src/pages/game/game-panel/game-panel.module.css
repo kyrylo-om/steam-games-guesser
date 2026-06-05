@@ -108,3 +108,11 @@
   font-weight: 700;
   color: #67c1f5;
 }
+
+.round {
+  font-size: 0.8rem;
+  width: 100%;
+  text-align: center;
+  color: #aaaaaa;
+  text-shadow: 0 0 6px rgba(103, 193, 245, 0.25);
+}

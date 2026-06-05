@@ -9,7 +9,7 @@ const Home = () => {
       <div className={styles.hero}>
         <h1 className={styles.title}>Steam Showdown</h1>
         <p className={styles.subtitle}>
-          Guess which Steam game matches the clue.
+          Two Steam games, side by side. Answer related questions and reveal their store pages as you go.
         </p>
       </div>
 

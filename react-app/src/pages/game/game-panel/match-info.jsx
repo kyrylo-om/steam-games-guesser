@@ -34,7 +34,7 @@ const animateNumber = (target, duration = 500) => {
   return displayed;
 };
 
-const MatchInfo = ({ revealPercent, score, leftGame, rightGame, round }) => {
+const MatchInfo = ({ revealPercent, score, leftGame, rightGame }) => {
   const animatedReveal = animateNumber(revealPercent, 500);
   const animatedScore = animateNumber(score, 500);
 
@@ -42,9 +42,10 @@ const MatchInfo = ({ revealPercent, score, leftGame, rightGame, round }) => {
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <span className={styles.matchupTitle}>
-          {leftGame?.game?.name ?? "?"} vs {rightGame?.game?.name ?? "?"}
+          <span>{leftGame?.game?.name ?? "?"}</span>
+          <span className={styles.vs}>vs</span>
+          <span>{rightGame?.game?.name ?? "?"}</span>
         </span>
-        <span className={styles.round}>Round {round}</span>
       </div>
       <div className={styles.container}>
       <div className={styles.revealBlock}>
@@ -54,7 +55,7 @@ const MatchInfo = ({ revealPercent, score, leftGame, rightGame, round }) => {
             <div
               className={styles.progressFill}
               style={{ width: `${animatedReveal}%` }}
-            />
+              />
           </div>
           <span className={styles.progressValue}>{animatedReveal}%</span>
         </div>

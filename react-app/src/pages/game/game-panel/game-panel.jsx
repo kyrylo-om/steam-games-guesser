@@ -13,6 +13,7 @@ const GamePanel = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPick
       {showResults ? (
         <MatchResults leftGame={leftGame} rightGame={rightGame} score={score} onNextMatch={onNextMatch} mode={mode} />
       ) : (
+        <>
         <CardHolder
           question={question}
           leftGame={leftGame}
@@ -26,6 +27,8 @@ const GamePanel = ({ question, leftGame, rightGame, subIndex, onPickLeft, onPick
           disabled={disabled}
           feedback={feedback}
         />
+        <p className={styles.round}>Question {round}</p>
+        </>
       )}
     </aside>
   );
