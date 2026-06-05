@@ -24,7 +24,8 @@ export const question_templates = {
         {
             "id": "is_free",
             "question": "Which game is free to play?",
-            "type": "select"
+            "type": "select",
+            "condition": (game) => game.price === 0
         }
     ],
     "release": [
@@ -59,7 +60,8 @@ export const question_templates = {
         {
             "id": "is_self_published",
             "question": "Which game is self-published?",
-            "type": "select"
+            "type": "select",
+            "condition": (game) => game.publishers.some((p) => game.developers.includes(p))
         }
     ],
     "achievements": [
@@ -103,19 +105,22 @@ export const question_templates = {
         {
             "id": "playable_linux",
             "question": "Which game is playable on Linux?",
-            "type": "select"
+            "type": "select",
+            "condition": (game) => game.platforms.includes("linux")
         },
         {
             "id": "playable_mac",
             "question": "Which game is playable on MacOS?",
-            "type": "select"
+            "type": "select",
+            "condition": (game) => game.platforms.includes("mac")
         }
     ],
     "multiplayer": [
         {
             "id": "multiplayer",
             "question": "Which game supports multiplayer?",
-            "type": "select"
+            "type": "select",
+            "condition": (game) => game.multiplayer === 1
         }
     ],
     "required_age": [

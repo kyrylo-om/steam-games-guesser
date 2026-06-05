@@ -65,19 +65,8 @@ const buildChoiceList = ({ count, items, allowed }) => {
 	return { correct, data };
 };
 
-// ── Select-type condition handlers ──────────────────────────
-
-const selectConditions = {
-	is_free: (game) => game.price === 0,
-	is_self_published: (game) =>
-		game.publishers.some((p) => game.developers.includes(p)),
-	playable_linux: (game) => game.platforms.includes("linux"),
-	playable_mac: (game) => game.platforms.includes("mac"),
-	multiplayer: (game) => game.multiplayer === 1,
-};
-
 const evaluateSelect = (question, game1, game2) => {
-	const handler = selectConditions[question.id];
+	const handler = question.condition;
 	if (!handler) return null;
 
 	const g1Ok = handler(game1);
