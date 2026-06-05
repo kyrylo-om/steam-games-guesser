@@ -17,6 +17,7 @@ const Game = () => {
   const [scrollTo, setScrollTo] = useState(null);
   const [hoveredSide, setHoveredSide] = useState(null);
   const [score, setScore] = useState(0);
+  const [showResults, setShowResults] = useState(false);
 
 
   useEffect(() => {
@@ -134,6 +135,16 @@ const Game = () => {
       setIsLocked(false);
       setSubIndex(0);
     }, 1500);
+
+    if (currentQuestionIndex >= questions.length - 1) {
+      setTimeout(() => {
+        setShowResults(true);
+      }, 900);
+    }
+  };
+
+  const handleNextMatch = () => {
+    window.location.reload();
   };
 
   if (isLoading) {
@@ -143,12 +154,6 @@ const Game = () => {
   if (isError || !leftGame || !rightGame) {
     return (
       <main className={styles.state}>Unable to load daily challenge.</main>
-    );
-  }
-
-  if (currentQuestionIndex >= questions.length) {
-    return (
-      <main className={styles.state}>Challenge complete! Great job!</main>
     );
   }
 
@@ -181,6 +186,10 @@ const Game = () => {
           revealPercent={revealPercent}
           score={score}
           round={currentQuestionIndex + 1}
+          showResults={showResults}
+          leftGame={leftGame}
+          rightGame={rightGame}
+          onNextMatch={handleNextMatch}
         />
       </section>
 
