@@ -1,6 +1,10 @@
+import { useNavigate } from "react-router-dom";
+
 import styles from "./match-results.module.css";
 
 const MatchResults = ({ leftGame, rightGame, score, onNextMatch, mode }) => {
+  const navigate = useNavigate();
+
   return (
     <div className={styles.wrapper}>
 
@@ -29,9 +33,16 @@ const MatchResults = ({ leftGame, rightGame, score, onNextMatch, mode }) => {
         </div>
       </div>
 
-      <button className={styles.nextButton} onClick={onNextMatch}>
-        {mode === "daily" ? "Back" : "Next match"}
-      </button>
+      <div className={styles.actionRow}>
+        <button className={styles.backButton} onClick={() => navigate('/')}>
+            Back
+        </button>
+        {mode !== "daily" && (
+            <button className={styles.nextButton} onClick={onNextMatch}>
+            Next match
+            </button>
+        )}
+      </div>
     </div>
   );
 };

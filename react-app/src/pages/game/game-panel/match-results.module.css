@@ -48,7 +48,6 @@
 }
 
 .steamButton {
-  flex-grow: 1;
   display: block;
   padding: 10px 16px;
   border-radius: 4px;
@@ -69,7 +68,6 @@
 }
 
 .nextButton {
-  margin-top: 0.5rem;
   padding: 12px 32px;
   border-radius: 6px;
   border: none;
@@ -87,4 +85,30 @@
   background: linear-gradient(135deg, #47c465, #3ba55c);
   box-shadow: 0 0 16px rgba(59, 165, 92, 0.45);
   color: #ffffff;
+}
+
+.backButton {
+  padding: 12px 32px;
+  border-radius: 6px;
+  border: 1px solid #19303e;
+  background: #1b2d3b;
+  color: #798a95;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.backButton:hover {
+  background: #1e3342;
+  border-color: #2a4a5c;
+  color: #c6d4df;
+}
+
+.actionRow {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
 }

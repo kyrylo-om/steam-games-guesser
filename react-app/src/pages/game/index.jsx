@@ -5,7 +5,6 @@ import SteamStorePanel from "./steam-store-panel/steam-store-panel";
 import styles from "./game.module.css";
 
 const Game = ({ mode }) => {
-  const navigate = useNavigate();
   const { date } = useParams();
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -154,12 +153,7 @@ const Game = ({ mode }) => {
   };
 
   const handleNextMatch = () => {
-    if (mode === "daily") {
-      navigate('/');
-    }
-    else {
-      window.location.reload();
-    }
+    window.location.reload();
   };
 
   if (isLoading || !leftGame || !rightGame) {
