@@ -134,6 +134,17 @@ export default {
 			}
 		}
 
+		if (url.pathname === "/daily-history") {
+			try {
+				const { results } = await env.steam_apps_db
+					.prepare("SELECT date FROM daily_matches ORDER BY date DESC")
+					.all();
+				return okResponse({ dates: results.map((r) => r.date) });
+			} catch (error) {
+				return errorResponse(error?.message || "Unknown error.", 500);
+			}
+		}
+
 		if (url.pathname === "/get-daily-match") {
 			const dateParam = url.searchParams.get("date");
 			let dateArg;
